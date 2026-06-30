@@ -3,6 +3,7 @@ package org.bank.authservice.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
 import org.bank.authservice.service.impl.AuthService;
@@ -21,5 +22,10 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
