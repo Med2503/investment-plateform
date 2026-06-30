@@ -2,6 +2,7 @@ package org.bank.authservice.service.impl;
 
 
 import lombok.RequiredArgsConstructor;
+import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
 import org.bank.authservice.entity.Role;
@@ -36,6 +37,17 @@ public class AuthService {
 
         return new AuthResponse("user registered ");
 
+    }
+
+
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials!");
+        }
+
+        return new AuthResponse("Login successful!");
     }
 
 }
