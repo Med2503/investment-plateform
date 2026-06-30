@@ -21,6 +21,8 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
 
+        System.out.println("register called!");
+
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new UsernameAlreadyExistsException(request.getUsername());
         }
