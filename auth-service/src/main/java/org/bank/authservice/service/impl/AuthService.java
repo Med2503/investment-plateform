@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
+import org.bank.authservice.dto.response.LoginResponse;
 import org.bank.authservice.dto.response.RegisterResponse;
 import org.bank.authservice.entity.Role;
 import org.bank.authservice.entity.User;
@@ -45,7 +46,7 @@ public class AuthService {
     }
 
 
-    public AuthResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found!"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
+import org.bank.authservice.dto.response.LoginResponse;
 import org.bank.authservice.dto.response.RegisterResponse;
 import org.bank.authservice.service.impl.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 }
