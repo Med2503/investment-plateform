@@ -7,12 +7,11 @@ import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
 import org.bank.authservice.dto.response.LoginResponse;
+import org.bank.authservice.dto.response.ProfileResponse;
 import org.bank.authservice.dto.response.RegisterResponse;
 import org.bank.authservice.service.impl.AuthService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -29,5 +28,10 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @GetMapping("/profile")
+    public ProfileResponse getProfile(Authentication authentication) {
+        return authService.getProfile(authentication.getName());
     }
 }
