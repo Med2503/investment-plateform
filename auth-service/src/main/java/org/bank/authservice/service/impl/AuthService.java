@@ -11,6 +11,8 @@ import org.bank.authservice.entity.Role;
 import org.bank.authservice.entity.User;
 import org.bank.authservice.exception.UsernameAlreadyExistsException;
 import org.bank.authservice.repository.UserRepository;
+import org.bank.authservice.security.jwt.JwtProperties;
+import org.bank.authservice.security.jwt.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final JwtProperties jwtProperties;
 
 
     public RegisterResponse register(RegisterRequest request) {
@@ -53,7 +57,14 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials!");
         }
 
-        return new AuthResponse("Login successful!");
+        String token = jwtService.generateToken(user);
+
+
+        return new LoginResponse(
+                token,
+                "Bearer",
+                jwtProperties.getExpiration()
+        );
     }
 
 }
