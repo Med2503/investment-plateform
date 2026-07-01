@@ -16,7 +16,7 @@ spring:
     show-sql: true
 
 
-  jwt:
-    sercret: 6a8d7f2b1c4e9a5d6f8b3c7e1a9d4f6b8c2e5f7a1d3c9b6e8f4a2d7c1b5e9f3
+jwt:
+    sercret: VGhpc0lzQVN1cGVyU2VjcmV0S2V5Rm9ySldUU3ByaW5nQm9vdDM=
     expiration: 86400000
 
