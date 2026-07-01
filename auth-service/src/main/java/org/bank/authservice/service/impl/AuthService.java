@@ -6,6 +6,7 @@ import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
 import org.bank.authservice.dto.response.LoginResponse;
+import org.bank.authservice.dto.response.ProfileResponse;
 import org.bank.authservice.dto.response.RegisterResponse;
 import org.bank.authservice.entity.Role;
 import org.bank.authservice.entity.User;
@@ -13,6 +14,7 @@ import org.bank.authservice.exception.UsernameAlreadyExistsException;
 import org.bank.authservice.repository.UserRepository;
 import org.bank.authservice.security.jwt.JwtProperties;
 import org.bank.authservice.security.jwt.JwtService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +67,19 @@ public class AuthService {
                 "Bearer",
                 jwtProperties.getExpiration()
         );
+    }
+
+    public ProfileResponse getProfile(String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return new ProfileResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRole()
+        );
+
     }
 
 }
