@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
 import org.bank.authservice.dto.response.AuthResponse;
+import org.bank.authservice.dto.response.RegisterResponse;
 import org.bank.authservice.entity.Role;
 import org.bank.authservice.entity.User;
 import org.bank.authservice.exception.UsernameAlreadyExistsException;
@@ -20,7 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public AuthResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
 
         System.out.println("register called!");
 
@@ -33,9 +34,13 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.CUSTOMER);
 
-        userRepository.save(user);
+        User saveUser = userRepository.save(user);
 
-        return new AuthResponse("user registered ");
+        return new RegisterResponse(
+                saveUser.getId(),
+                saveUser.getUsername(),
+                "User registered successfully"
+        );
 
     }
 

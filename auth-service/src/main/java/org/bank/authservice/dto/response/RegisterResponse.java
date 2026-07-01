@@ -5,7 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class AuthResponse {
+public class RegisterResponse {
 
-    private String token;
+    private Long userId;
+    private String username;
+    private String message;
+
 }
