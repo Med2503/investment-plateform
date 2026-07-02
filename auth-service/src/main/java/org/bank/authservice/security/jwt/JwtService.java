@@ -2,18 +2,16 @@ package org.bank.authservice.security.jwt;
 
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.bank.authservice.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -30,7 +28,7 @@ public class JwtService {
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getSigningKey())
-                .compact()
+                .compact();
     }
 
     public String extractUsername(String token) {
@@ -54,7 +52,16 @@ public class JwtService {
     }
 
     public Claims extractAllClaims(String token) {
-        return null;
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid JWT Token");
+        }
+
     }
 
     public boolean isTokenExpired(String token) {
