@@ -36,11 +36,11 @@ public class JwtService {
     }
 
     public Long extractUserId(String token) {
-        return null;
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
 
     public String extractRole() {
-        return null;
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public Date extractExpiration(String token) {
