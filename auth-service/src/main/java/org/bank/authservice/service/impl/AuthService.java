@@ -13,9 +13,14 @@ import org.bank.authservice.exception.UsernameAlreadyExistsException;
 import org.bank.authservice.repository.UserRepository;
 import org.bank.authservice.security.jwt.JwtProperties;
 import org.bank.authservice.security.jwt.JwtService;
+import org.bank.authservice.security.service.CustomUserDetailService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+    private final CustomUserDetailService customUserDetailService;
 
 
     public RegisterResponse register(RegisterRequest request) {
@@ -58,7 +64,14 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials!");
         }
 
-        String token = jwtService.generateToken(user);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("role", user.getRole().name());
+        claims.put("iss", "auth-service");
+
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(user.getUsername());
+
+        String token = jwtService.generateToken(claims, userDetails);
 
 
         return new LoginResponse(
