@@ -14,6 +14,8 @@ import org.bank.authservice.repository.UserRepository;
 import org.bank.authservice.security.jwt.JwtProperties;
 import org.bank.authservice.security.jwt.JwtService;
 import org.bank.authservice.security.service.CustomUserDetailService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +33,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final CustomUserDetailService customUserDetailService;
+    private final AuthenticationManager authenticationManager;
 
 
     public RegisterResponse register(RegisterRequest request) {
@@ -58,11 +61,17 @@ public class AuthService {
 
 
     public LoginResponse login(LoginRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found!"));
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials!");
-        }
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
