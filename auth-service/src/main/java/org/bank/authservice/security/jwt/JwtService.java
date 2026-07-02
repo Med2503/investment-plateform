@@ -32,7 +32,7 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return null;
+        return extractClaim(token, Claims::getSubject);
     }
 
     public Long extractUserId(String token) {
