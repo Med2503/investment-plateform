@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bank.authservice.dto.request.LoginRequest;
 import org.bank.authservice.dto.request.RegisterRequest;
-import org.bank.authservice.dto.response.AuthResponse;
 import org.bank.authservice.dto.response.LoginResponse;
 import org.bank.authservice.dto.response.ProfileResponse;
 import org.bank.authservice.dto.response.RegisterResponse;
