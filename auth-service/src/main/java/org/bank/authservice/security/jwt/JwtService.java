@@ -39,7 +39,7 @@ public class JwtService {
         return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
 
-    public String extractRole() {
+    public String extractRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
