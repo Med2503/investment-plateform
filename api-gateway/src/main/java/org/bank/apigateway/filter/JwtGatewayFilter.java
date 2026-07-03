@@ -7,6 +7,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -37,7 +38,20 @@ public class JwtGatewayFilter implements GlobalFilter {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
-        return chain.filter(exchange);
+
+        Long userId = jwtService.extractUserId(token);
+        String role = jwtService.extractRole(token);
+
+        ServerHttpRequest mutatedRequest =  exchange.getRequest()
+                .mutate()
+                .header("X-User-Id", String.valueOf(userId))
+                .header("X-User-Role", role)
+                .build();
+
+        return chain.filter(
+                exchange.mutate()
+                        .request(mutatedRequest)
+                        .build());
 
     }
 }
