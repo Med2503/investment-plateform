@@ -19,9 +19,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
 
+    private final JwtProperties jwtProperties;
+
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+        Date expiration = new Date(now.getTime() + jwtProperties.getExpiration());
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
@@ -75,7 +77,7 @@ public class JwtService {
     }
 
     public SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode("VGhpc0lzQVN1cGVyU2VjcmV0S2V5Rm9ySldUU3ByaW5n");
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
