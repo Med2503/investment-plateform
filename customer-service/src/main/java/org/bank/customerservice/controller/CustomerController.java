@@ -1,6 +1,7 @@
 package org.bank.customerservice.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bank.customerservice.dto.request.CreateCustomerRequest;
 import org.bank.customerservice.dto.response.CustomerResponse;
@@ -19,7 +20,7 @@ public class CustomerController {
     @PostMapping
     public CustomerResponse createCustomer(
             @RequestHeader("X-User-Id") Long userId,
-            @RequestBody CreateCustomerRequest request
+           @Valid @RequestBody CreateCustomerRequest request
     ) {
         return customerService.createCustomer(userId, request);
     }
@@ -34,13 +35,13 @@ public class CustomerController {
     @PutMapping("/me")
     public CustomerResponse updateMyProfile(
             @RequestHeader("X-User-Id") Long userId,
-            @RequestBody CreateCustomerRequest request) {
+            @Valid @RequestBody CreateCustomerRequest request) {
         return customerService.updateCustomer(userId, request);
     }
 
     @DeleteMapping("/me")
     public void deleteMyProfile(
-            @RequestHeader("X-User-Id") long userId
+            @Valid @RequestHeader("X-User-Id") long userId
     ) {
         customerService.deleteCustomer(userId);
     }
