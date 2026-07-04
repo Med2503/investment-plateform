@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse getCurrentCustomerProfile(Long userId) {
-        getByUserId(userId);
+        return getByUserId(userId);
     }
 
     @Override
