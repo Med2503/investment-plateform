@@ -23,10 +23,15 @@ public class Customer {
     private Long id;
     private Long userId;
 
+    @Column(nullable = false, length = 50)
     private String firstName;
+
+    @Column(nullable = false, length = 50)
     private String lastName;
 
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
+
     private String phoneNumber;
 
     private LocalDate dateOfBirth;
