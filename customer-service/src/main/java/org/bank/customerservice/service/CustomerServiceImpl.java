@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.bank.customerservice.dto.request.CreateCustomerRequest;
 import org.bank.customerservice.dto.response.CustomerResponse;
 import org.bank.customerservice.entity.Customer;
-import org.bank.customerservice.exception.CustomerAlreadyExist;
-import org.bank.customerservice.exception.CustomerNotFound;
+import org.bank.customerservice.exception.CustomerAlreadyExistException;
+import org.bank.customerservice.exception.CustomerNotFoundException;
 import org.bank.customerservice.mapper.CustomerMapper;
 import org.bank.customerservice.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse createCustomer(Long userId, CreateCustomerRequest request) {
         if (customerRepository.existsByUserId(userId)) {
-            throw new CustomerAlreadyExist("Customer exits for this userId");
+            throw new CustomerAlreadyExistException("Customer exits for this userId");
         }
 
         Customer customer = customerMapper.toEntity(request, userId);
@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse getByUserId(Long userId) {
         Customer customer = customerRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomerNotFound("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
         return customerMapper.toResponse(customer);
     }
 
@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse updateCustomer(Long userId, CreateCustomerRequest request) {
         Customer customer = customerRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomerNotFound("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
         customer.setFirstName(request.getFirstName());
         customer.setLastName(request.getLastName());
         customer.setEmail(request.getEmail());
@@ -69,7 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(Long userId) {
         Customer customer = customerRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomerNotFound("Customer don't exits"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer don't exits"));
         customerRepository.delete(customer);
     }
 

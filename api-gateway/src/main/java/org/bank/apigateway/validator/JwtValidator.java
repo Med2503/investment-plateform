@@ -14,7 +14,9 @@ public class JwtValidator {
 
     public boolean isValid(String token) {
         try {
-            return jwtService.isTokenExpired(token);
+            return !jwtService.isTokenExpired(token)
+                    && jwtService.extractUsername(token) != null
+                    && jwtService.extractUserId(token) != null;
         } catch (Exception e) {
             return false;
         }
