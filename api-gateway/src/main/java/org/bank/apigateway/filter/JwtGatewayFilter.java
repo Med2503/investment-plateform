@@ -24,7 +24,7 @@ public class JwtGatewayFilter implements GlobalFilter {
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
 
-        // allow public routes (already handled by SecurityConfig)
+
         if (auth == null || !auth.startsWith("Bearer ")) {
             return chain.filter(exchange);
         }

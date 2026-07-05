@@ -46,6 +46,7 @@ public class CustomerController {
         customerService.deleteCustomer(userId);
     }
 
+    @GetMapping("/me")
     public List<CustomerResponse> search(
             @RequestParam String key
     ) {
