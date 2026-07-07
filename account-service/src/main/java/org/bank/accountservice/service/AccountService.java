@@ -19,10 +19,10 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    public AccountResponse createAccount(CreateAccountRequest request) {
+    public AccountResponse createAccount(String userId, CreateAccountRequest request) {
         Account account = Account.builder()
                 .accountNumber(generateAccountNumber())
-                .userId(request.userId())
+                .userId(userId)
                 .type(request.type())
                 .currency(request.currency())
                 .balance(
