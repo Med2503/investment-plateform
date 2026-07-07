@@ -22,6 +22,7 @@ public class AccountService {
 
 
     private final AccountRepository accountRepository;
+    private final AccountNumberGenerator generator;
 
     public AccountResponse createAccount(String userId, CreateAccountRequest request) {
         if (request.initialDeposit() != null &&
@@ -38,9 +39,14 @@ public class AccountService {
             throw new AccountAlreadyExistsByTypeException("user already own this account Type");
         }
 
+        String accountNumber;
+        do {
+            accountNumber = generator.generate();
+        } while (accountRepository.existsByAccountNumber(accountNumber));
+
 
         Account account = Account.builder()
-                .accountNumber(generateAccountNumber())
+                .accountNumber(accountNumber)
                 .userId(userId)
                 .type(request.type())
                 .currency(request.currency())
@@ -56,7 +62,4 @@ public class AccountService {
 
     }
 
-    private String generateAccountNumber() {
-        return "ACC - " + UUID.randomUUID().toString().substring(0, 10).toUpperCase();
-    }
 }

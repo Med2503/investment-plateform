@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "accounts")
@@ -16,9 +17,9 @@ import java.time.LocalDateTime;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "account_number", nullable = false, unique = true)
     private String accountNumber;
 
     @Column(nullable = false)
