@@ -13,8 +13,8 @@ public class AccountMapper {
                 account.getUserId(),
                 account.getBalance(),
                 account.getCurrency(),
-                account.getType(),
-                account.getStatus()
+                account.getType().name(),
+                account.getStatus().name()
         );
     }
 

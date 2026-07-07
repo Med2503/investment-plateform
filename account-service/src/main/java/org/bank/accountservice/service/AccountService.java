@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bank.accountservice.dto.AccountResponse;
 import org.bank.accountservice.dto.CreateAccountRequest;
 import org.bank.accountservice.entity.Account;
+import org.bank.accountservice.entity.AccountStatus;
 import org.bank.accountservice.exception.AccountAlreadyExistsByTypeException;
 import org.bank.accountservice.exception.AccountCurrencyException;
 import org.bank.accountservice.exception.InitialDepositException;
@@ -49,6 +50,7 @@ public class AccountService {
                 .accountNumber(accountNumber)
                 .userId(userId)
                 .type(request.type())
+                .status(AccountStatus.ACTIVE)
                 .currency(request.currency())
                 .balance(
                         request.initialDeposit() != null ? request.initialDeposit() : BigDecimal.ZERO

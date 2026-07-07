@@ -1,19 +1,17 @@
 package org.bank.accountservice.dto;
 
-import org.bank.accountservice.entity.AccountStatus;
-import org.bank.accountservice.entity.AccountType;
-
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record AccountResponse(
 
-        String id,
+        UUID id,
         String accountNumber,
         String userId,
         BigDecimal balance,
         String currency,
-        AccountType type,
-        AccountStatus status
+        String type,
+        String status
 
 ) {
 }
