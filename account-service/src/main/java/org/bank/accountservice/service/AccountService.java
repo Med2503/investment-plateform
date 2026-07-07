@@ -8,6 +8,7 @@ import org.bank.accountservice.entity.Account;
 import org.bank.accountservice.entity.AccountStatus;
 import org.bank.accountservice.exception.AccountAlreadyExistsByTypeException;
 import org.bank.accountservice.exception.AccountCurrencyException;
+import org.bank.accountservice.exception.AccountNotFoundException;
 import org.bank.accountservice.exception.InitialDepositException;
 import org.bank.accountservice.mapper.AccountMapper;
 import org.bank.accountservice.repository.AccountRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +26,7 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator generator;
+    private final AccountMapper accountMapper;
 
     public AccountResponse createAccount(String userId, CreateAccountRequest request) {
         if (request.initialDeposit() != null &&
@@ -60,8 +63,25 @@ public class AccountService {
 
         Account saved = accountRepository.save(account);
 
-        return AccountMapper.toResponse(saved);
+        return accountMapper.toResponse(saved);
 
     }
 
+    public AccountResponse getAccountById(UUID accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Cannot find account with similar id = " + accountId));
+
+
+
+
+        return accountMapper.toResponse(account);
+    }
+
+
+    public List<AccountResponse> getUserAccounts(String userId) {
+        return accountRepository.findAllByUserId(userId)
+                .stream()
+                .map(accountMapper::toResponse)
+                .toList();
+    }
 }

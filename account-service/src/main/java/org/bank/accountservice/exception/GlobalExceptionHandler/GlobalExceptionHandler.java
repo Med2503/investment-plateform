@@ -4,6 +4,7 @@ package org.bank.accountservice.exception.GlobalExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import org.bank.accountservice.exception.AccountAlreadyExistsByTypeException;
 import org.bank.accountservice.exception.AccountCurrencyException;
+import org.bank.accountservice.exception.AccountNotFoundException;
 import org.bank.accountservice.exception.InitialDepositException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,14 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.CONFLICT.value(), "ACCOUNT_ALREADY_EXISTS", ex.getMessage(), request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateAccount(AccountNotFoundException ex, HttpServletRequest request) {
+
+        ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), "ACCOUNT_NOT_FOUND", ex.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 
