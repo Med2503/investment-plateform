@@ -34,6 +34,10 @@ public class AccountService {
             throw new AccountCurrencyException("Unsupported currency " + request.currency());
         }
 
+        if (accountRepository.existsByUserIdAndType(userId, request.type())) {
+            throw new AccountAlreadyExistsByTypeException("user already own this account Type");
+        }
+
 
         Account account = Account.builder()
                 .accountNumber(generateAccountNumber())
@@ -44,9 +48,6 @@ public class AccountService {
                         request.initialDeposit() != null ? request.initialDeposit() : BigDecimal.ZERO
                 )
                 .build();
-        if (accountRepository.existsByUserIdAndType(userId, request.type())) {
-            throw new AccountAlreadyExistsByTypeException("user already own this account Type");
-        }
 
 
         Account saved = accountRepository.save(account);
