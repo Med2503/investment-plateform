@@ -27,6 +27,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator generator;
     private final AccountMapper accountMapper;
+    private final AccountStatusValidator validator;
 
     public AccountResponse createAccount(String userId, CreateAccountRequest request) {
         if (request.initialDeposit() != null &&
@@ -72,8 +73,6 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Cannot find account with similar id = " + accountId));
 
 
-
-
         return accountMapper.toResponse(account);
     }
 
@@ -83,5 +82,24 @@ public class AccountService {
                 .stream()
                 .map(accountMapper::toResponse)
                 .toList();
+    }
+
+
+    public AccountResponse updateStatus(UUID accountId, AccountStatus status) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+
+
+        validator.validate(
+                account.getStatus(),
+                status
+        );
+
+
+        account.setStatus(status);
+
+        Account savedAccount = accountRepository.save(account);
+
+        return accountMapper.toResponse(savedAccount);
     }
 }

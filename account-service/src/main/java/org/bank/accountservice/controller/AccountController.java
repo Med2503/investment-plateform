@@ -4,6 +4,7 @@ package org.bank.accountservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bank.accountservice.dto.AccountResponse;
+import org.bank.accountservice.dto.AccountStatusRequest;
 import org.bank.accountservice.dto.CreateAccountRequest;
 import org.bank.accountservice.service.AccountService;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,18 @@ public class AccountController {
     @GetMapping
     public List<AccountResponse> getAccounts(@RequestHeader("X-User-Id") String userId) {
         return accountService.getUserAccounts(userId);
+    }
+
+
+    @PatchMapping("/{id}/status")
+    public AccountResponse updateStatus(
+            @PathVariable UUID id,
+            @RequestBody AccountStatusRequest request
+    ) {
+        return accountService.updateStatus(
+                id,
+                request.status()
+        );
     }
 
 }
