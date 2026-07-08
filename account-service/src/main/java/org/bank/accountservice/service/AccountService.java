@@ -25,23 +25,20 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator generator;
     private final AccountMapper accountMapper;
-    private final AccountStatusValidator validator;
+    private final AccountStatusValidator accountStatusValidator;
+    private final AccountValidator accountValidator;
 
 
     @Transactional
     public AccountResponse createAccount(String userId, CreateAccountRequest request) {
         if (request.initialDeposit() != null && request.initialDeposit().compareTo(BigDecimal.ZERO) < 0) {
-            throw new InitialDepositException("initial deposit should be positive");
-        }
-        List<String> currencies = List.of("EUR", "USD", "TND");
-
-        if (!currencies.contains(request.currency())) {
-            throw new AccountCurrencyException("Unsupported currency " + request.currency());
+            accountValidator.validateInitialDeposit(request.initialDeposit());
         }
 
-        if (accountRepository.existsByUserIdAndType(userId, request.type())) {
-            throw new AccountAlreadyExistsByTypeException("user already own this account Type");
-        }
+
+        accountValidator.validateCurrency(request.currency());
+
+        accountValidator.validateAccountByUserIdAndType(userId, request);
 
         String accountNumber;
         do {
@@ -75,7 +72,7 @@ public class AccountService {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
 
-        validator.validate(account.getStatus(), status);
+        accountStatusValidator.validate(account.getStatus(), status);
 
 
         account.setStatus(status);
@@ -87,15 +84,12 @@ public class AccountService {
 
     @Transactional
     public AccountResponse deposit(UUID accountId, BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidAmountException("Amount must be greater than zero");
-        }
+        accountValidator.validateAmount(amount);
 
+
+        accountValidator.validateAccountActive(accountId);
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account don't exist"));
 
-        if (account.getStatus() != AccountStatus.ACTIVE) {
-            throw new IllegalStateException("Account is not active");
-        }
         account.setBalance(account.getBalance().add(amount));
 
         return accountMapper.toResponse(accountRepository.save(account));
@@ -103,18 +97,15 @@ public class AccountService {
 
     @Transactional
     public AccountResponse withdraw(UUID accountId, BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidAmountException("Amount must be positive greater than 0");
-        }
+        accountValidator.validateBalance(accountId, amount);
+
+
+        accountStatusValidator.validateActiveStatus(accountId);
+
+        accountValidator.validateAmount(amount);
 
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account don't exist"));
-        if (account.getStatus() != AccountStatus.ACTIVE) {
-            throw new IllegalStateException(("Account is not active"));
-        }
 
-        if (account.getBalance().compareTo(amount) < 0) {
-            throw new InsufficientBalanceException("Insuffisant balance");
-        }
 
         account.setBalance(account.getBalance().subtract(amount));
         return accountMapper.toResponse(accountRepository.save(account));

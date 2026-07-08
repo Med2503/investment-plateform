@@ -62,10 +62,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
     }
 
+    @ExceptionHandler(AccountExistsByUserIdAndType.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAmount(AccountExistsByUserIdAndType ex, HttpServletRequest request) {
+
+        ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.EXPECTATION_FAILED.value(), "ACCOUNT-EXITS", ex.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+    }
+
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ResponseEntity<ErrorResponse> handleOptimisticLocking(ObjectOptimisticLockingFailureException ex, HttpServletRequest request) {
-        return  ResponseEntity.status(HttpStatus.CONFLICT).body(
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(
                         LocalDateTime.now(),
                         HttpStatus.CONFLICT.value(),
@@ -87,5 +95,6 @@ public class GlobalExceptionHandler {
                         request.getRequestURI()));
 
     }
+
 
 }
