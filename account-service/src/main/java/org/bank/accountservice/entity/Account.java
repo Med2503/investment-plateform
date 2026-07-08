@@ -41,6 +41,9 @@ public class Account {
     @Column(nullable = false)
     private AccountStatus status;
 
+    @Version
+    private Long version;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

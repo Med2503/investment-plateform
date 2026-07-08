@@ -2,12 +2,10 @@ package org.bank.accountservice.exception.GlobalExceptionHandler;
 
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.bank.accountservice.exception.AccountAlreadyExistsByTypeException;
-import org.bank.accountservice.exception.AccountCurrencyException;
-import org.bank.accountservice.exception.AccountNotFoundException;
-import org.bank.accountservice.exception.InitialDepositException;
+import org.bank.accountservice.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -46,6 +44,36 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), "ACCOUNT_NOT_FOUND", ex.getMessage(), request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<ErrorResponse> handleInsuffieantBalance(InsufficientBalanceException ex, HttpServletRequest request) {
+
+        ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_ACCEPTABLE.value(), "INSUFFISANT-BALANCE", ex.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+    }
+
+    @ExceptionHandler(InvalidAmountException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAmount(InvalidAmountException ex, HttpServletRequest request) {
+
+        ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_ACCEPTABLE.value(), "INVALID-AMOUNT", ex.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+    }
+
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLocking(ObjectOptimisticLockingFailureException ex, HttpServletRequest request) {
+        return  ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        "OPTIMISTICL_LOCK_ERROR",
+                        ex.getMessage(),
+                        request.getRequestURI()));
+
+
     }
 
 

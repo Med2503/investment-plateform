@@ -1,6 +1,7 @@
 package org.bank.accountservice.service;
 
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.bank.accountservice.dto.AccountResponse;
 import org.bank.accountservice.dto.CreateAccountRequest;
@@ -26,6 +27,8 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final AccountStatusValidator validator;
 
+
+    @Transactional
     public AccountResponse createAccount(String userId, CreateAccountRequest request) {
         if (request.initialDeposit() != null && request.initialDeposit().compareTo(BigDecimal.ZERO) < 0) {
             throw new InitialDepositException("initial deposit should be positive");
@@ -67,7 +70,7 @@ public class AccountService {
         return accountRepository.findAllByUserId(userId).stream().map(accountMapper::toResponse).toList();
     }
 
-
+    @Transactional
     public AccountResponse updateStatus(UUID accountId, AccountStatus status) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
@@ -82,6 +85,7 @@ public class AccountService {
         return accountMapper.toResponse(savedAccount);
     }
 
+    @Transactional
     public AccountResponse deposit(UUID accountId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
@@ -97,6 +101,7 @@ public class AccountService {
         return accountMapper.toResponse(accountRepository.save(account));
     }
 
+    @Transactional
     public AccountResponse withdraw(UUID accountId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount must be positive greater than 0");
