@@ -7,12 +7,15 @@ import org.bank.accountservice.dto.AccountResponse;
 import org.bank.accountservice.dto.CreateAccountRequest;
 import org.bank.accountservice.entity.Account;
 import org.bank.accountservice.entity.AccountStatus;
+import org.bank.accountservice.event.AuditEvent;
 import org.bank.accountservice.exception.*;
+import org.bank.accountservice.kafka.AuditEventProducer;
 import org.bank.accountservice.mapper.AccountMapper;
 import org.bank.accountservice.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +30,7 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final AccountStatusValidator accountStatusValidator;
     private final AccountValidator accountValidator;
+    private final AuditEventProducer auditEventProducer;
 
 
     @Transactional
@@ -50,6 +54,16 @@ public class AccountService {
 
 
         Account saved = accountRepository.save(account);
+
+        auditEventProducer.publish(
+                AuditEvent.builder()
+                        .eventType("ACCOUNT-CREATED")
+                        .accountId(saved.getId().toString())
+                        .userId(saved.getUserId())
+                        .timestamp(Instant.now())
+                        .details("New Account is created")
+                        .build()
+        );
 
         return accountMapper.toResponse(saved);
 
@@ -79,6 +93,16 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
+        auditEventProducer.publish(
+                AuditEvent.builder()
+                        .eventType("ACCOUNT_STATUS_UPDATED")
+                        .accountId(savedAccount.getId().toString())
+                        .userId(savedAccount.getUserId())
+                        .timestamp(Instant.now())
+                        .details("Update status to " + savedAccount.getStatus())
+                        .build()
+        );
+
         return accountMapper.toResponse(savedAccount);
     }
 
@@ -92,7 +116,19 @@ public class AccountService {
 
         account.setBalance(account.getBalance().add(amount));
 
-        return accountMapper.toResponse(accountRepository.save(account));
+        Account saved = accountRepository.save(account);
+
+        auditEventProducer.publish(
+                AuditEvent.builder()
+                        .eventType("DEPOSIT_AMOUNT")
+                        .accountId(saved.getId().toString())
+                        .userId(saved.getUserId())
+                        .timestamp(Instant.now())
+                        .details("deposit " + amount)
+                        .build()
+        );
+
+        return accountMapper.toResponse(saved);
     }
 
     @Transactional
@@ -108,7 +144,20 @@ public class AccountService {
 
 
         account.setBalance(account.getBalance().subtract(amount));
-        return accountMapper.toResponse(accountRepository.save(account));
+        Account save = accountRepository.save(account);
+
+        auditEventProducer.publish(
+                AuditEvent.builder()
+                        .eventType("WITHDRAW_MONEY")
+                        .accountId(save.getId().toString())
+                        .userId(save.getUserId())
+                        .timestamp(Instant.now())
+                        .details("Withdraw " + amount)
+
+                        .build()
+        );
+
+        return accountMapper.toResponse(save);
     }
 
 }
