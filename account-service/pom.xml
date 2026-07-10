@@ -67,6 +67,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.bank</groupId>
+            <artifactId>shared-events</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>

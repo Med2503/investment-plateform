@@ -7,17 +7,16 @@ import org.bank.accountservice.dto.AccountResponse;
 import org.bank.accountservice.dto.CreateAccountRequest;
 import org.bank.accountservice.entity.Account;
 import org.bank.accountservice.entity.AccountStatus;
-import org.bank.accountservice.event.AuditEvent;
-import org.bank.accountservice.exception.*;
+import org.bank.accountservice.exception.AccountNotFoundException;
 import org.bank.accountservice.kafka.AuditEventProducer;
 import org.bank.accountservice.mapper.AccountMapper;
 import org.bank.accountservice.repository.AccountRepository;
+import org.bank.sharedevents.event.AuditEvent;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -57,12 +56,13 @@ public class AccountService {
 
         auditEventProducer.publish(
                 AuditEvent.builder()
-                        .eventType("ACCOUNT-CREATED")
+                        .eventType("CREATE_ACCOUNT")
                         .accountId(saved.getId().toString())
                         .userId(saved.getUserId())
                         .timestamp(Instant.now())
                         .details("New Account is created")
                         .build()
+
         );
 
         return accountMapper.toResponse(saved);

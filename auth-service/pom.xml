@@ -81,6 +81,7 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <!-- JWT API -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

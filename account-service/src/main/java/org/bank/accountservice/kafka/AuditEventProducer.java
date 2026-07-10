@@ -2,7 +2,7 @@ package org.bank.accountservice.kafka;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bank.accountservice.event.AuditEvent;
+import org.bank.sharedevents.event.AuditEvent;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
