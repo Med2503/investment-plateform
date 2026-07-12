@@ -3,7 +3,7 @@ package org.bank.auditservice.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bank.auditservice.event.AuditEvent;
+import org.bank.sharedevents.event.AuditEvent;
 import org.bank.auditservice.service.AuditService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

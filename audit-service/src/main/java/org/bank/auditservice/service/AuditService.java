@@ -3,8 +3,8 @@ package org.bank.auditservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.auditservice.entity.AuditLog;
-import org.bank.auditservice.event.AuditEvent;
 import org.bank.auditservice.repository.AuditLogRepository;
+import org.bank.sharedevents.event.AuditEvent;
 import org.springframework.stereotype.Service;
 
 @Service

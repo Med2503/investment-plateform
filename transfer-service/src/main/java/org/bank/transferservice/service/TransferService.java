@@ -3,6 +3,8 @@ package org.bank.transferservice.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.bank.transferservice.TransferCompletedEvent;
+import org.bank.transferservice.client.AccountClient;
 import org.bank.transferservice.dto.CreateTransferRequest;
 import org.bank.transferservice.dto.TransferResponse;
 import org.bank.transferservice.entity.Transfer;
@@ -10,9 +12,12 @@ import org.bank.transferservice.entity.TransferStatus;
 import org.bank.transferservice.exception.SourceAndDestinationMustBeDifferentException;
 import org.bank.transferservice.mapper.TransferMapper;
 import org.bank.transferservice.repository.TransferRepository;
+import org.bank.transferservice.saga.TransferSagaOrchestrator;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,8 @@ public class TransferService {
 
     private final TransferRepository transferRepository;
     private final TransferMapper transferMapper;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final TransferSagaOrchestrator orchestrator;
 
 
     @Transactional
@@ -41,6 +48,46 @@ public class TransferService {
         Transfer savedTransfer = transferRepository.save(transfer);
 
         return transferMapper.toResponse(savedTransfer);
+
+    }
+
+    @Transactional
+    public TransferResponse executeTransfer(UUID transferId) {
+
+        Transfer transfer = transferRepository.findById(transferId).orElseThrow();
+
+        try {
+
+            orchestrator.execute(transfer);
+
+
+            transfer.setStatus(TransferStatus.COMPLETED);
+
+            transfer.setCompletedAt(
+                    Instant.now()
+            );
+
+            Transfer saved = transferRepository.save(transfer);
+
+            kafkaTemplate.send(
+                    "transfer-completed",
+                    new TransferCompletedEvent(
+                            saved.getId(),
+                            saved.getSourceAccountId(),
+                            saved.getDestinationAccountId(),
+                            saved.getAmount(),
+                            saved.getCurrency()
+                    )
+            );
+            return transferMapper.toResponse(saved);
+        } catch (Exception e) {
+            transfer.setStatus(TransferStatus.FAILED);
+            transfer.setFailureReason(e.getMessage());
+            transferRepository.save(transfer);
+
+            throw e;
+        }
+
 
     }
 
