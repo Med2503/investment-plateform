@@ -19,4 +19,13 @@ public class kafkaTopicConfig {
                 .build();
     }
 
+    @Bean
+    public NewTopic transferFailedTopic() {
+        return TopicBuilder
+                .name("transfer-failed")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
 }

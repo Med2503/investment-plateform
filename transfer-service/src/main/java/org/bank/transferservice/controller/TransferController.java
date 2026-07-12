@@ -1,4 +1,4 @@
-package org.bank.transferservice;
+package org.bank.transferservice.controller;
 
 
 import jakarta.validation.Valid;

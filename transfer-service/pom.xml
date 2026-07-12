@@ -76,6 +76,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.bank</groupId>
+            <artifactId>shared-events</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

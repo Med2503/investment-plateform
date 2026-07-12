@@ -1,4 +1,4 @@
-package org.bank.transferservice;
+package org.bank.sharedevents.event;
 
 
 import java.math.BigDecimal;

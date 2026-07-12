@@ -3,8 +3,8 @@ package org.bank.transferservice.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.bank.transferservice.TransferCompletedEvent;
-import org.bank.transferservice.client.AccountClient;
+import org.bank.sharedevents.event.TransferCompletedEvent;
+import org.bank.sharedevents.event.TransferFailedEvent;
 import org.bank.transferservice.dto.CreateTransferRequest;
 import org.bank.transferservice.dto.TransferResponse;
 import org.bank.transferservice.entity.Transfer;
@@ -83,7 +83,19 @@ public class TransferService {
         } catch (Exception e) {
             transfer.setStatus(TransferStatus.FAILED);
             transfer.setFailureReason(e.getMessage());
-            transferRepository.save(transfer);
+            Transfer saved = transferRepository.save(transfer);
+
+            kafkaTemplate.send(
+                    "transfer-failed",
+                    new TransferFailedEvent(
+                            saved.getId(),
+                            saved.getSourceAccountId(),
+                            saved.getDestinationAccountId(),
+                            saved.getAmount(),
+                            saved.getCurrency(),
+                            saved.getFailureReason()
+                    )
+            );
 
             throw e;
         }
