@@ -40,6 +40,7 @@ public class Transfer {
     private TransferStatus status;
 
     private Instant createdAt;
+    private Instant completedAt;
 
     private String failureReason;
 }
