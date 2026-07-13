@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Transfer Failed</title>
+</head>
+
+
+<body>
+
+<h2>Transfer Failed</h2>
+
+
+<p>Hello,Attia</p>
+
+
+<p>
+    Unfortunately your transfer could not be completed.
+</p>
+
+
+<table>
+
+    <tr>
+        <td><strong>Transfer ID</strong></td>
+        <td th:text="${transferId}"></td>
+    </tr>
+
+
+    <tr>
+        <td><strong>From Account</strong></td>
+        <td th:text="${sourceAccountId}"></td>
+    </tr>
+
+
+    <tr>
+        <td><strong>To Account</strong></td>
+        <td th:text="${destinationAccountId}"></td>
+    </tr>
+
+
+    <tr>
+        <td><strong>Amount</strong></td>
+        <td>
+            <span th:text="${amount}"></span>
+            <span th:text="${currency}"></span>
+        </td>
+    </tr>
+
+
+    <tr>
+        <td><strong>Reason</strong></td>
+        <td th:text="${failureReason}"></td>
+    </tr>
+
+
+</table>
+
+
+<p>
+    Please contact support if you need assistance.
+</p>
+
+
+</body>
+
+</html>
