@@ -13,6 +13,12 @@ spring:
     username: bank_user
     password: bank_pass
 
+  spring:
+    kafka:
+      producer:
+        properties:
+          spring.json.add.type.headers: true
+
 
   jpa:
     hibernate:

@@ -11,7 +11,7 @@
     <groupId>org.bank</groupId>
     <artifactId>account-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>accout-service</name>
+    <name>account-service</name>
     <description>account-service</description>
     <url/>
     <licenses>
