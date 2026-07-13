@@ -3,7 +3,9 @@ package org.bank.auditservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.auditservice.entity.AuditLog;
+import org.bank.auditservice.event.ProcessedEvent;
 import org.bank.auditservice.repository.AuditLogRepository;
+import org.bank.auditservice.repository.ProcessedEventRepository;
 import org.bank.sharedevents.event.AuditEvent;
 import org.bank.sharedevents.event.TransferCompletedEvent;
 import org.bank.sharedevents.event.TransferFailedEvent;
@@ -16,6 +18,7 @@ import java.time.Instant;
 public class AuditService {
 
     private final AuditLogRepository repository;
+    private final ProcessedEventRepository processedEventRepository;
 
 
     public void save(AuditEvent event) {
@@ -31,7 +34,14 @@ public class AuditService {
         repository.save(log);
     }
 
+
+
     public void saveCompleted(TransferCompletedEvent event) {
+
+        if (processedEventRepository.existsById(event.eventId())) {
+            return;
+        }
+
         AuditLog log = AuditLog.builder()
                 .eventType("TRANSFER_COMPLETED")
                 .accountId(event.sourceAccountId().toString())
@@ -45,9 +55,22 @@ public class AuditService {
                 )
                 .build();
         repository.save(log);
+
+        processedEventRepository.save(
+                ProcessedEvent.builder()
+                        .eventId(event.eventId())
+                        .processedAt(Instant.now())
+                        .build()
+        );
+
     }
 
+
     public void saveFailure(TransferFailedEvent event) {
+
+        if (processedEventRepository.existsById(event.eventId())) {
+            return;
+        }
 
         AuditLog log = AuditLog.builder()
                 .eventType("TRANSFER_FAILED")
@@ -63,6 +86,13 @@ public class AuditService {
                 )
                 .build();
         repository.save(log);
+
+        processedEventRepository.save(
+                ProcessedEvent.builder()
+                        .eventId(event.eventId())
+                        .processedAt(Instant.now())
+                        .build()
+        );
     }
 
 

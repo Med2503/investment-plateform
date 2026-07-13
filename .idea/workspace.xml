@@ -8,11 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/consumer/AuditEventConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/consumer/AuditEventConsumer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/service/AuditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/service/AuditService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transfer-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/transfer-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/TransferCompletedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferCompletedEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/TransferController.java" beforeDir="false" afterPath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/controller/TransferController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/config/kafkaTopicConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/config/kafkaTopicConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/saga/TransferSagaOrchestrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/saga/TransferSagaOrchestrator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferCompletedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferCompletedEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferFailedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferFailedEvent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/service/TransferService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/service/TransferService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -40,8 +37,8 @@
       <list>
         <option value="Exception" />
         <option value="Record" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
         <option value="Interface" />
       </list>
     </option>

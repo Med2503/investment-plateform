@@ -72,6 +72,7 @@ public class TransferService {
             kafkaTemplate.send(
                     "transfer-completed",
                     new TransferCompletedEvent(
+                            UUID.randomUUID(),
                             saved.getId(),
                             saved.getSourceAccountId(),
                             saved.getDestinationAccountId(),
@@ -88,6 +89,7 @@ public class TransferService {
             kafkaTemplate.send(
                     "transfer-failed",
                     new TransferFailedEvent(
+                            UUID.randomUUID(),
                             saved.getId(),
                             saved.getSourceAccountId(),
                             saved.getDestinationAccountId(),

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record TransferCompletedEvent(
+        UUID eventId,
         UUID transferId,
         UUID sourceAccountId,
         UUID destinationAccountId,

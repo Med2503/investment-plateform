@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record TransferFailedEvent(
+        UUID eventId,
         UUID transferId,
         UUID sourceAccountId,
         UUID destinationAccountId,
