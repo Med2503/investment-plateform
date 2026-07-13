@@ -16,8 +16,6 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
         </processorPath>
         <module name="customer-service" />
       </profile>
@@ -31,26 +29,19 @@
         </processorPath>
         <module name="account-service" />
       </profile>
-      <profile name="Annotation profile for shared-events" enabled="true">
+      <profile name="Annotation profile for notification-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
         </processorPath>
+        <module name="auth-service" />
+        <module name="audit-service" />
         <module name="api-gateway" />
         <module name="shared-events" />
-        <module name="auth-service" />
-      </profile>
-      <profile name="Annotation profile for transfer-service" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-        </processorPath>
-        <module name="audit-service" />
+        <module name="demo" />
+        <module name="notification-service" />
         <module name="transfer-service" />
       </profile>
     </annotationProcessing>
@@ -62,7 +53,9 @@
       <module name="audit-service" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="customer-service" options="-parameters" />
+      <module name="demo" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="shared-events" options="-parameters" />
       <module name="transfer-service" options="-parameters" />
     </option>
