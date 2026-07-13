@@ -6,6 +6,8 @@ import org.bank.transferservice.client.AccountClient;
 import org.bank.transferservice.entity.Transfer;
 import org.bank.transferservice.saga.compensation.TransferCompensationService;
 import org.springframework.stereotype.Service;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +16,13 @@ public class TransferSagaOrchestrator {
     private final AccountClient accountClient;
     private final TransferCompensationService compensationService;
 
+    @CircuitBreaker(
+            name = "account-service",
+            fallbackMethod = "fallbackTransfer"
+    )
+    @Retry(
+            name = "account-service"
+    )
     public void execute(Transfer transfer) {
 
         boolean debitCompleted = false;
@@ -37,5 +46,9 @@ public class TransferSagaOrchestrator {
         }
 
 
+    }
+
+    public void fallbackTransfer(Transfer transfer, Exception e) {
+        throw new IllegalArgumentException("Account service not available", e);
     }
 }

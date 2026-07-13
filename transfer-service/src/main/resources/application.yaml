@@ -19,7 +19,35 @@ spring:
       ddl-auto: update
     show-sql: true
 
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          account-service:
+            connectTimeout: 3000
+            readTimeout: 5000
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      account-service:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+  retry:
+    instances:
+      accountService:
+        maxAttempts: 3
+        waitDuration: 1s
+
+
