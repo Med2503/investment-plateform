@@ -9,6 +9,7 @@ import org.bank.portfolioservice.dto.response.PortfolioAssetResponse;
 import org.bank.portfolioservice.dto.response.PortfolioResponse;
 import org.bank.portfolioservice.entity.Portfolio;
 import org.bank.portfolioservice.entity.PortfolioAsset;
+import org.bank.portfolioservice.exception.*;
 import org.bank.portfolioservice.mapper.PortfolioAssetMapper;
 import org.bank.portfolioservice.mapper.PortfolioMapper;
 import org.bank.portfolioservice.repository.PortfolioAssetRepository;
@@ -33,7 +34,7 @@ public class PortfolioService {
     public PortfolioResponse createPortfolio(String userId, CreatePortfolioRequest request) {
 
         if (portfolioRepository.findByUserId(userId).isPresent()) {
-            throw new IllegalStateException("User already has portfolio");
+            throw new PortfolioAlreadyExistsException("User already has a portfolio");
         }
 
 
@@ -52,7 +53,7 @@ public class PortfolioService {
     public PortfolioResponse getMyPortfolio(String userId) {
         Portfolio portfolio = portfolioRepository.findByUserId(userId)
                 .orElseThrow(
-                        () -> new RuntimeException("Portfolio not found")
+                        () -> new PortfolioNotFoundException("Portfolio for this userId not found")
                 );
         return portfolioMapper.toResponse(portfolio);
     }
@@ -61,7 +62,25 @@ public class PortfolioService {
     @Transactional
     public PortfolioAssetResponse addAsset(String userId, AddAssetRequest request) {
 
-        Portfolio portfolio = portfolioRepository.findByUserId(userId).orElseThrow();
+        Portfolio portfolio = portfolioRepository.findByUserId(userId).orElseThrow(
+                () -> new PortfolioAssetNotFoundException("Portfolio not found!")
+        );
+
+        if (request.quantity().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidQuantityException("quantity must be greater than zero");
+        }
+        if (request.averagePrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidQuantityException("average proce must be greater than 0");
+        }
+
+        portfolioAssetRepository.findByPortfolioIdAndSymbol(
+                portfolio.getId(),
+                request.symbol().toUpperCase()
+        ).ifPresent(
+                asset -> {
+                    throw new AssetAlreadyExistsException("Assets already exists in portfolio!!");
+                });
+
         PortfolioAsset asset = PortfolioAsset.builder()
                 .portfolio(portfolio)
                 .symbol(request.symbol().toUpperCase())
