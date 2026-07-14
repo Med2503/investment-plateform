@@ -1,4 +1,4 @@
-package org.bank.portfolioservice.dto;
+package org.bank.portfolioservice.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -1,17 +1,17 @@
 package org.bank.portfolioservice.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Table(name = "portfolios")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +27,13 @@ public class Portfolio {
     private String name;
     private BigDecimal totalValue;
     private Instant createdAt;
+
+
+    @OneToMany(
+            mappedBy = "portfolio",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    List<PortfolioAsset> assets = new ArrayList<>();
 }

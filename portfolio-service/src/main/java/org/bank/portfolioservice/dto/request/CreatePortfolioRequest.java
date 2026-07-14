@@ -1,4 +1,4 @@
-package org.bank.portfolioservice.dto;
+package org.bank.portfolioservice.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

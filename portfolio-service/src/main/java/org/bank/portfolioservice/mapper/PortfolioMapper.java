@@ -1,7 +1,7 @@
 package org.bank.portfolioservice.mapper;
 
 
-import org.bank.portfolioservice.dto.PortfolioResponse;
+import org.bank.portfolioservice.dto.response.PortfolioResponse;
 import org.bank.portfolioservice.entity.Portfolio;
 import org.springframework.stereotype.Component;
 

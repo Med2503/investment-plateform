@@ -1,16 +1,15 @@
 package org.bank.portfolioservice.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Table(name = "portfolio_assets")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,9 +21,12 @@ public class PortfolioAsset {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portfolio_id")
+    private Portfolio portfolio;
 
-    private UUID portfolioId;
     private String symbol;
     private BigDecimal quantity;
     private BigDecimal averagePrice;
+    private Instant createdAt;
 }
