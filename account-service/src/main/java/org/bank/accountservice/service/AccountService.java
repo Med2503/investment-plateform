@@ -12,6 +12,9 @@ import org.bank.accountservice.kafka.AuditEventProducer;
 import org.bank.accountservice.mapper.AccountMapper;
 import org.bank.accountservice.repository.AccountRepository;
 import org.bank.sharedevents.event.AuditEvent;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -69,6 +72,10 @@ public class AccountService {
 
     }
 
+    @Cacheable(
+            value = "accounts",
+            key = "#accountId"
+    )
     public AccountResponse getAccountById(UUID accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Cannot find account with similar id = " + accountId));
 
@@ -82,6 +89,10 @@ public class AccountService {
     }
 
     @Transactional
+    @CachePut(
+            value = "accounts",
+            key = "#accountId"
+    )
     public AccountResponse updateStatus(UUID accountId, AccountStatus status) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
@@ -107,6 +118,10 @@ public class AccountService {
     }
 
     @Transactional
+    @CachePut(
+            value = "accounts",
+            key = "#accountId"
+    )
     public AccountResponse deposit(UUID accountId, BigDecimal amount) {
         accountValidator.validateAmount(amount);
 
@@ -132,6 +147,10 @@ public class AccountService {
     }
 
     @Transactional
+    @CachePut(
+            value = "accounts",
+            key = "#accountId"
+    )
     public AccountResponse withdraw(UUID accountId, BigDecimal amount) {
         accountValidator.validateBalance(accountId, amount);
 
@@ -160,4 +179,14 @@ public class AccountService {
         return accountMapper.toResponse(save);
     }
 
+
+    @CacheEvict(
+            value = "accounts",
+            key = "#accountId"
+    )
+    public void deleteAccount(UUID id) {
+        Account account = accountRepository.findById(id).orElseThrow();
+        accountRepository.delete(account);
+
+    }
 }
