@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/service/PortfolioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/service/PortfolioService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/consumer/TradeEventConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/consumer/TradeEventConsumer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,11 +31,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Record" />
         <option value="Enum" />
-        <option value="Class" />
         <option value="Exception" />
+        <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
