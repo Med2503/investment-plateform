@@ -15,9 +15,9 @@
 
     <groupId>com.portfolio</groupId>
     <artifactId>portfolio-service</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>portfolio-service</name>
-    <description>Portfolio Service with Spring Boot 3.5.16</description>
+    <description>Portfolio Service</description>
 
     <properties>
         <java.version>21</java.version>
@@ -95,6 +95,11 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bank</groupId>
+            <artifactId>shared-events</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

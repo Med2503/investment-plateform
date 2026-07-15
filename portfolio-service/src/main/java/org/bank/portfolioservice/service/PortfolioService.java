@@ -14,11 +14,15 @@ import org.bank.portfolioservice.mapper.PortfolioAssetMapper;
 import org.bank.portfolioservice.mapper.PortfolioMapper;
 import org.bank.portfolioservice.repository.PortfolioAssetRepository;
 import org.bank.portfolioservice.repository.PortfolioRepository;
+import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.TradeType;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -104,4 +108,78 @@ public class PortfolioService {
                 .toList();
     }
 
+
+    @Transactional
+    public void processTradeEvent(TradeExecutedEvent event) {
+
+        Portfolio portfolio = portfolioRepository.findByUserId(event.userId())
+                .orElseThrow(
+                        () -> new PortfolioNotFoundException("Portfolio not found ")
+                );
+
+        Optional<PortfolioAsset> optionalAsset = portfolioAssetRepository.findByPortfolioIdAndSymbol(
+                portfolio.getId(),
+                event.symbol()
+        );
+
+        if (event.tradeType() == TradeType.BUY) {
+            if (optionalAsset.isPresent()) {
+
+                PortfolioAsset asset = optionalAsset.get();
+
+                BigDecimal currentQuantity = asset.getQuantity();
+                BigDecimal newQuantity = currentQuantity.add(
+                        event.quantity()
+                );
+
+                BigDecimal totalCost = asset.getAveragePrice()
+                        .multiply(currentQuantity)
+                        .add(
+                                event.price().multiply(event.quantity())
+                        );
+                BigDecimal averagePrice = totalCost.divide(
+                        newQuantity,
+                        2,
+                        RoundingMode.HALF_UP
+                );
+                asset.setQuantity(newQuantity);
+                asset.setAveragePrice(averagePrice);
+
+                portfolioAssetRepository.save(asset);
+            } else {
+                PortfolioAsset asset = PortfolioAsset.builder()
+                        .portfolio(portfolio)
+                        .symbol(event.symbol())
+                        .quantity(event.quantity())
+                        .averagePrice(event.price())
+                        .createdAt(Instant.now())
+                        .build();
+                portfolioAssetRepository.save(asset);
+            }
+            return;
+        }
+
+        if (event.tradeType() == TradeType.SELL) {
+            PortfolioAsset asset = optionalAsset.orElseThrow(
+                    () -> new PortfolioNotFoundException("Asset not found in portfolio")
+            );
+
+            BigDecimal remainingQuantity = asset.getQuantity().subtract(event.quantity());
+
+            if (remainingQuantity.compareTo(BigDecimal.ZERO) < 0) {
+                throw new InsufficientAssetQuantityException("Not enough asset quantity to sell");
+            }
+
+            if (remainingQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                portfolioAssetRepository.delete(asset);
+            } else {
+                asset.setQuantity(remainingQuantity);
+                portfolioAssetRepository.save(asset);
+            }
+
+
+        }
+
+
+    }
 }
