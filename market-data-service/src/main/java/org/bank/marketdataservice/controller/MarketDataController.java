@@ -54,4 +54,12 @@ public class MarketDataController {
     public void deleteAsset(@PathVariable String symbol) {
         marketDataService.deleteAsset(symbol);
     }
+
+    @PostMapping("/{symbol}/refresh")
+    public MarketAssetResponse refreshPrice(
+            @PathVariable String symbol
+    ) {
+        return marketDataService.refreshPrice(symbol);
+    }
+
 }

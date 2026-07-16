@@ -11,6 +11,7 @@ import org.bank.marketdataservice.exception.InvalidMarketPriceException;
 import org.bank.marketdataservice.exception.MarketAssetAlreadyExistsException;
 import org.bank.marketdataservice.exception.MarketAssetNotFoundException;
 import org.bank.marketdataservice.mapper.MarketAssetMapper;
+import org.bank.marketdataservice.provider.MarketDataProvider;
 import org.bank.marketdataservice.repository.MarketAssetRepository;
 import org.bank.sharedevents.event.MarketPriceUpdatedEvent;
 import org.springframework.cache.annotation.CacheEvict;
@@ -30,6 +31,8 @@ public class MarketDataService {
     private final MarketAssetRepository marketAssetRepository;
     private final MarketAssetMapper mapper;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final MarketDataProvider marketDataProvider;
+
 
     @Transactional
     public MarketAssetResponse createAsset(CreateMarketAssetRequest request) {
@@ -149,6 +152,54 @@ public class MarketDataService {
 
         marketAssetRepository.delete(asset);
 
+    }
+
+    @Transactional
+    public MarketAssetResponse refreshPrice(String symbol) {
+        MarketAsset asset = marketAssetRepository.findBySymbol(symbol.toUpperCase())
+                .orElseThrow(
+                        () -> new MarketAssetNotFoundException("not found!")
+                );
+        BigDecimal oldPrice = asset.getCurrentPrice();
+        BigDecimal newPrice = marketDataProvider.getCurrentPrice(symbol);
+
+        if(newPrice.compareTo(BigDecimal.ZERO)<=0){
+
+            throw new InvalidMarketPriceException(
+                    "Invalid provider price"
+            );
+        }
+
+
+
+        asset.setCurrentPrice(
+                newPrice
+        );
+
+
+        asset.setLastUpdated(
+                Instant.now()
+        );
+
+
+
+        MarketAsset saved =
+                marketAssetRepository.save(asset);
+
+        kafkaTemplate.send(
+                "market-price-updated",
+                new MarketPriceUpdatedEvent(
+                        saved.getSymbol(),
+                        oldPrice,
+                        saved.getCurrentPrice(),
+                        saved.getCurrency(),
+                        saved.getLastUpdated()
+                )
+        );
+
+
+
+        return mapper.toResponse(saved);
     }
 
 }
