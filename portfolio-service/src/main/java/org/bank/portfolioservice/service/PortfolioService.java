@@ -3,8 +3,10 @@ package org.bank.portfolioservice.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.bank.portfolioservice.client.MarketDataClient;
 import org.bank.portfolioservice.dto.request.AddAssetRequest;
 import org.bank.portfolioservice.dto.request.CreatePortfolioRequest;
+import org.bank.portfolioservice.dto.response.MarketAssetResponse;
 import org.bank.portfolioservice.dto.response.PortfolioAssetResponse;
 import org.bank.portfolioservice.dto.response.PortfolioResponse;
 import org.bank.portfolioservice.entity.Portfolio;
@@ -32,6 +34,7 @@ public class PortfolioService {
     private final PortfolioAssetRepository portfolioAssetRepository;
     private final PortfolioMapper portfolioMapper;
     private final PortfolioAssetMapper portfolioAssetMapper;
+    private final MarketDataClient marketDataClient;
 
 
     @Transactional
@@ -181,5 +184,32 @@ public class PortfolioService {
         }
 
 
+    }
+
+    @Transactional
+    public BigDecimal calculatePortfolioValue(String userId) {
+
+
+        Portfolio portfolio = portfolioRepository.findByUserId(userId)
+                .orElseThrow(
+                        () -> new PortfolioNotFoundException("Portfolio not found")
+                );
+
+        List<PortfolioAsset> assets = portfolioAssetRepository.findByPortfolioId(portfolio.getId());
+
+        BigDecimal totalValue = BigDecimal.ZERO;
+        for (PortfolioAsset asset : assets) {
+
+            MarketAssetResponse marketAsset = marketDataClient.getMarketAsset(asset.getSymbol());
+
+            BigDecimal assetValue = asset.getQuantity().multiply(marketAsset.currentPrice());
+            totalValue = totalValue.add(assetValue);
+
+
+        }
+
+        portfolio.setTotalValue(totalValue);
+        portfolioRepository.save(portfolio);
+        return totalValue;
     }
 }
