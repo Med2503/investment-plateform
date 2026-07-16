@@ -12,6 +12,8 @@ import org.bank.marketdataservice.exception.MarketAssetAlreadyExistsException;
 import org.bank.marketdataservice.exception.MarketAssetNotFoundException;
 import org.bank.marketdataservice.mapper.MarketAssetMapper;
 import org.bank.marketdataservice.repository.MarketAssetRepository;
+import org.bank.sharedevents.event.MarketPriceUpdatedEvent;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +26,7 @@ public class MarketDataService {
 
     private final MarketAssetRepository marketAssetRepository;
     private final MarketAssetMapper mapper;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional
     public MarketAssetResponse createAsset(CreateMarketAssetRequest request) {
@@ -74,6 +77,8 @@ public class MarketDataService {
 
 
 
+
+
     @Transactional
     public MarketAssetResponse updatePrice(
             String symbol,
@@ -86,6 +91,7 @@ public class MarketDataService {
             );
         }
 
+
         MarketAsset asset =
                 marketAssetRepository.findBySymbol(symbol.toUpperCase())
                         .orElseThrow(
@@ -94,14 +100,28 @@ public class MarketDataService {
                                 )
                         );
 
+        BigDecimal oldPrice = asset.getCurrentPrice();
+
+
         asset.setCurrentPrice(request.currentPrice());
         asset.setLastUpdated(Instant.now());
+        MarketAsset saved = marketAssetRepository.save(asset);
 
-        return mapper.toResponse(
-                marketAssetRepository.save(asset)
+        kafkaTemplate.send(
+                "market-price-updated",
+                new MarketPriceUpdatedEvent(
+                        saved.getSymbol(),
+                        oldPrice,
+                        saved.getCurrentPrice(),
+                        saved.getCurrency(),
+                        saved.getLastUpdated()
+                )
+
         );
-    }
+        return mapper.toResponse(saved);
 
+
+    }
 
 
     @Transactional
