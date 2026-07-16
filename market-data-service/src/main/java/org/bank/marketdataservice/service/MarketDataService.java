@@ -13,6 +13,9 @@ import org.bank.marketdataservice.exception.MarketAssetNotFoundException;
 import org.bank.marketdataservice.mapper.MarketAssetMapper;
 import org.bank.marketdataservice.repository.MarketAssetRepository;
 import org.bank.sharedevents.event.MarketPriceUpdatedEvent;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +53,10 @@ public class MarketDataService {
         );
     }
 
-
+    @Cacheable(
+            value = "market-assets",
+            key = "#symbol"
+    )
     public MarketAssetResponse getAsset(
             String symbol
     ) {
@@ -76,9 +82,10 @@ public class MarketDataService {
     }
 
 
-
-
-
+    @CachePut(
+            value = "market-assets",
+            key = "#symbol"
+    )
     @Transactional
     public MarketAssetResponse updatePrice(
             String symbol,
@@ -123,7 +130,10 @@ public class MarketDataService {
 
     }
 
-
+    @CacheEvict(
+            value = "market-assets",
+            key = "#symbol"
+    )
     @Transactional
     public void deleteAsset(
             String symbol
