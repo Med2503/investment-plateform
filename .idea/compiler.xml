@@ -44,7 +44,7 @@
         <module name="shared-events" />
         <module name="auth-service" />
       </profile>
-      <profile name="Annotation profile for market-data-service" enabled="true">
+      <profile name="Annotation profile for trading-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -53,8 +53,9 @@
         </processorPath>
         <module name="market-data-service" />
         <module name="audit-service" />
-        <module name="transfer-service" />
+        <module name="trading-service" />
         <module name="portfolio-service" />
+        <module name="transfer-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -74,6 +75,7 @@
       <module name="notification-service" options="-parameters" />
       <module name="portfolio-service" options="-parameters" />
       <module name="shared-events" options="-parameters" />
+      <module name="trading-service" options="-parameters" />
       <module name="transfer-service" options="-parameters" />
     </option>
   </component>
