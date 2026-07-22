@@ -9,6 +9,7 @@ import org.bank.tradingservice.entity.Trade;
 import org.bank.tradingservice.entity.TradeStatus;
 import org.bank.tradingservice.exception.InvalidTradeException;
 import org.bank.tradingservice.exception.TradeNotFoundException;
+import org.bank.tradingservice.execution.TradeExecutionOrchestrator;
 import org.bank.tradingservice.mapper.TradeMapper;
 import org.bank.tradingservice.repository.TradeRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class TradeService {
 
     private final TradeRepository tradeRepository;
     private final TradeMapper tradeMapper;
+    private final TradeExecutionOrchestrator orchestrator;
 
     @Transactional
     public TradeResponse createTrade(String userId, CreateTradeRequest request) {
@@ -44,7 +46,11 @@ public class TradeService {
                 .status(TradeStatus.PENDING)
                 .createdAt(Instant.now())
                 .build();
-        return tradeMapper.toResponse(tradeRepository.save(trade));
+
+
+        Trade saved = tradeRepository.save(trade);
+        Trade executed = orchestrator.execute(saved);
+        return tradeMapper.toResponse(executed);
 
     }
 
