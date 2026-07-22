@@ -42,8 +42,6 @@ public class Trade {
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal quantity;
 
-    @Column(precision = 19, scale = 4)
-    private BigDecimal requestedPrice;
 
     @Column(precision = 19, scale = 4)
     private BigDecimal executedPrice;
