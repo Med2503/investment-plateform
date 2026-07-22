@@ -7,6 +7,7 @@ import java.util.UUID;
 public record TradeExecutedEvent(
         UUID tradeId,
         String userId,
+        String accountId,
         String symbol,
         BigDecimal quantity,
         BigDecimal price,
