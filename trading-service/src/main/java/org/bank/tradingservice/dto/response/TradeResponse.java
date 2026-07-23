@@ -1,7 +1,8 @@
 package org.bank.tradingservice.dto.response;
 
+import org.bank.sharedevents.event.TradeType;
 import org.bank.tradingservice.entity.TradeStatus;
-import org.bank.tradingservice.entity.TradeType;
+
 
 import java.math.BigDecimal;
 import java.time.Instant;

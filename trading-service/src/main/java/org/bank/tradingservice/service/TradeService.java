@@ -23,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TradeService {
 
-    private final TradeRepository tradeRepository;
+
     private final TradeMapper tradeMapper;
     private final TradeExecutionOrchestrator orchestrator;
 

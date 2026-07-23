@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TradeExecutedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TradeExecutedEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/request/CreateTradeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/request/CreateTradeRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/entity/Trade.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/entity/Trade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/entity/TradeType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/response/TradeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/response/TradeResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/TradeExecutionOrchestrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/TradeExecutionOrchestrator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/service/TradeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/service/TradeService.java" afterDir="false" />
     </list>
@@ -38,9 +35,9 @@
       <list>
         <option value="Exception" />
         <option value="Enum" />
+        <option value="Record" />
         <option value="Interface" />
         <option value="Class" />
-        <option value="Record" />
       </list>
     </option>
   </component>
