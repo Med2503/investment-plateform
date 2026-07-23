@@ -34,59 +34,85 @@ public class SellTradeExecutionStrategy implements TradeExecutionStrategy {
     @Override
     @Transactional
     public Trade execute(String userId, CreateTradeRequest request) {
-        PortfolioAssetResponse asset = portfolioGateway.getAsset(
-                userId,
-                request.symbol()
-        );
+        boolean moneyDeposited = false;
+        BigDecimal totalAmount = null;
 
-        if (asset.quantity().compareTo(request.quantity()) < 0) {
-            throw new InvalidTradeException("not enough quantity");
+        try {
+
+            PortfolioAssetResponse asset = portfolioGateway.getAsset(
+                    userId,
+                    request.symbol()
+            );
+
+            if (asset == null || asset.quantity().compareTo(request.quantity()) < 0) {
+                throw new InvalidTradeException("not enough quantity");
+            }
+
+
+            MarketAssetResponse market = marketDataGateway.getPrice(request.symbol());
+            if (market == null || market.currentPrice() == null || market.currentPrice().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new InvalidTradeException("Invalid price");
+            }
+
+            BigDecimal price = market.currentPrice();
+            totalAmount = request.quantity().multiply(price);
+            accountGateway.deposit(request.accountId(), totalAmount);
+            moneyDeposited = true;
+
+            Trade trade = Trade.builder()
+                    .orderId(UUID.randomUUID())
+                    .userId(userId)
+                    .accountId(request.accountId())
+                    .symbol(request.symbol().toUpperCase())
+                    .tradeType(TradeType.SELL)
+                    .quantity(request.quantity())
+                    .executedPrice(price)
+                    .totalAmount(totalAmount)
+                    .status(TradeStatus.EXECUTED)
+                    .createdAt(Instant.now())
+                    .executedAt(Instant.now())
+                    .build();
+            Trade saved = tradeRepository.save(trade);
+            tradeProducer.sendTradeExecuted(
+                    new TradeExecutedEvent(
+                            saved.getId(),
+
+                            saved.getUserId(),
+
+                            saved.getAccountId(),
+
+                            saved.getSymbol(),
+
+                            saved.getQuantity(),
+
+                            saved.getExecutedPrice(),
+
+                            saved.getTradeType(),
+
+                            saved.getExecutedAt()
+                    )
+            );
+
+            return saved;
+
+        } catch (Exception ex) {
+            if (moneyDeposited) {
+                try {
+                    accountGateway.withdraw(
+                            request.accountId(),
+                            totalAmount
+                    );
+
+                } catch (Exception compensationException) {
+
+
+                    // futur log
+
+
+                }
+            }
+            throw ex;
         }
-
-        MarketAssetResponse market = marketDataGateway.getPrice(request.symbol());
-        BigDecimal price = market.currentPrice();
-        BigDecimal totalAmount = request.quantity().multiply(price);
-        accountGateway.deposit(request.accountId(), totalAmount);
-        portfolioGateway.sellAsset(
-                userId,
-                request.symbol(),
-                request.quantity()
-        );
-        Trade trade = Trade.builder()
-                .orderId(UUID.randomUUID())
-                .userId(userId)
-                .accountId(request.accountId())
-                .symbol(request.symbol().toUpperCase())
-                .tradeType(TradeType.SELL)
-                .quantity(request.quantity())
-                .executedPrice(price)
-                .totalAmount(totalAmount)
-                .status(TradeStatus.EXECUTED)
-                .createdAt(Instant.now())
-                .executedAt(Instant.now())
-                .build();
-        Trade saved = tradeRepository.save(trade);
-        tradeProducer.sendTradeExecuted(
-                new TradeExecutedEvent(
-                        saved.getId(),
-
-                        saved.getUserId(),
-
-                        saved.getAccountId(),
-
-                        saved.getSymbol(),
-
-                        saved.getQuantity(),
-
-                        saved.getExecutedPrice(),
-
-                        saved.getTradeType(),
-
-                        saved.getExecutedAt()
-                )
-        );
-
-        return saved;
     }
 
     @Override

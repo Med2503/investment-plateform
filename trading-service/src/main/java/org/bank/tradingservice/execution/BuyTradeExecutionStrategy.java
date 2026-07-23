@@ -8,6 +8,7 @@ import org.bank.tradingservice.dto.request.CreateTradeRequest;
 import org.bank.tradingservice.dto.response.MarketAssetResponse;
 import org.bank.tradingservice.entity.Trade;
 import org.bank.tradingservice.entity.TradeStatus;
+import org.bank.tradingservice.exception.InvalidTradeException;
 import org.bank.tradingservice.gateway.AccountGateway;
 import org.bank.tradingservice.gateway.MarketDataGateway;
 import org.bank.tradingservice.kafka.producer.TradeProducer;
@@ -33,46 +34,71 @@ public class BuyTradeExecutionStrategy implements TradeExecutionStrategy {
     @Override
     @Transactional
     public Trade execute(String userId, CreateTradeRequest request) {
-        MarketAssetResponse market = marketDataGateway.getPrice(request.symbol());
-        BigDecimal price = market.currentPrice();
-        BigDecimal totalAmount = request.quantity().multiply(price);
-        accountGateway.withdraw(request.accountId(), totalAmount);
-        Trade trade = Trade.builder()
-                .orderId(UUID.randomUUID())
-                .userId(userId)
-                .accountId(request.accountId())
-                .symbol(request.symbol().toUpperCase())
-                .tradeType(TradeType.BUY)
-                .quantity(request.quantity())
-                .executedPrice(price)
-                .totalAmount(totalAmount)
-                .status(TradeStatus.EXECUTED)
-                .createdAt(Instant.now())
-                .executedAt(Instant.now())
-                .build();
-        Trade saved = tradeRepository.save(trade);
+        boolean moneyWithdrawn = false;
+        try {
+            MarketAssetResponse market = marketDataGateway.getPrice(request.symbol());
 
-        tradeProducer.sendTradeExecuted(
-                new TradeExecutedEvent(
-                        saved.getId(),
+            if (market == null || market.currentPrice() == null || market.currentPrice().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new InvalidTradeException("Invalid market price");
+            }
 
-                        saved.getUserId(),
 
-                        saved.getAccountId(),
+            BigDecimal price = market.currentPrice();
+            BigDecimal totalAmount = request.quantity().multiply(price);
+            accountGateway.withdraw(request.accountId(), totalAmount);
+            moneyWithdrawn = true;
+            Trade trade = Trade.builder()
+                    .orderId(UUID.randomUUID())
+                    .userId(userId)
+                    .accountId(request.accountId())
+                    .symbol(request.symbol().toUpperCase())
+                    .tradeType(TradeType.BUY)
+                    .quantity(request.quantity())
+                    .executedPrice(price)
+                    .totalAmount(totalAmount)
+                    .status(TradeStatus.EXECUTED)
+                    .createdAt(Instant.now())
+                    .executedAt(Instant.now())
+                    .build();
+            Trade saved = tradeRepository.save(trade);
 
-                        saved.getSymbol(),
+            tradeProducer.sendTradeExecuted(
+                    new TradeExecutedEvent(
+                            saved.getId(),
 
-                        saved.getQuantity(),
+                            saved.getUserId(),
 
-                        saved.getExecutedPrice(),
+                            saved.getAccountId(),
 
-                        saved.getTradeType(),
+                            saved.getSymbol(),
 
-                        saved.getExecutedAt()
-                )
-        );
-        return saved;
+                            saved.getQuantity(),
 
+                            saved.getExecutedPrice(),
+
+                            saved.getTradeType(),
+
+                            saved.getExecutedAt()
+                    )
+            );
+            return saved;
+
+        } catch (Exception ex) {
+            if (moneyWithdrawn) {
+                try {
+                    accountGateway.deposit(
+                            request.accountId(),
+                            request.quantity().multiply(
+                                    marketDataGateway.getPrice(request.symbol())
+                                            .currentPrice()
+                            )
+                    );
+                } catch (Exception compensationException) {
+                // on vas logger apres avec Resil / ELK
+                }
+            }
+            throw ex;
+        }
     }
 
     @Override
