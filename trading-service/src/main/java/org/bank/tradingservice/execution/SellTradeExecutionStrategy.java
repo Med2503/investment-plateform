@@ -6,10 +6,13 @@ import org.bank.sharedevents.event.TradeExecutedEvent;
 import org.bank.sharedevents.event.TradeType;
 import org.bank.tradingservice.dto.request.CreateTradeRequest;
 import org.bank.tradingservice.dto.response.MarketAssetResponse;
+import org.bank.tradingservice.dto.response.PortfolioAssetResponse;
 import org.bank.tradingservice.entity.Trade;
 import org.bank.tradingservice.entity.TradeStatus;
+import org.bank.tradingservice.exception.InvalidTradeException;
 import org.bank.tradingservice.gateway.AccountGateway;
 import org.bank.tradingservice.gateway.MarketDataGateway;
+import org.bank.tradingservice.gateway.PortfolioGateway;
 import org.bank.tradingservice.kafka.producer.TradeProducer;
 import org.bank.tradingservice.repository.TradeRepository;
 import org.springframework.stereotype.Component;
@@ -26,17 +29,29 @@ public class SellTradeExecutionStrategy implements TradeExecutionStrategy {
     private final AccountGateway accountGateway;
     private final TradeRepository tradeRepository;
     private final TradeProducer tradeProducer;
+    private final PortfolioGateway portfolioGateway;
 
     @Override
     @Transactional
     public Trade execute(String userId, CreateTradeRequest request) {
+        PortfolioAssetResponse asset = portfolioGateway.getAsset(
+                userId,
+                request.symbol()
+        );
 
-        //TODO
+        if (asset.quantity().compareTo(request.quantity()) < 0) {
+            throw new InvalidTradeException("not enough quantity");
+        }
 
         MarketAssetResponse market = marketDataGateway.getPrice(request.symbol());
         BigDecimal price = market.currentPrice();
         BigDecimal totalAmount = request.quantity().multiply(price);
         accountGateway.deposit(request.accountId(), totalAmount);
+        portfolioGateway.sellAsset(
+                userId,
+                request.symbol(),
+                request.quantity()
+        );
         Trade trade = Trade.builder()
                 .orderId(UUID.randomUUID())
                 .userId(userId)
