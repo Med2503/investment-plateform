@@ -30,27 +30,8 @@ public class TradeService {
     @Transactional
     public TradeResponse createTrade(String userId, CreateTradeRequest request) {
 
-        if (request.quantity().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidTradeException("quantity must be greater than 0");
-        }
-
-        UUID orderId = UUID.randomUUID();
-
-        Trade trade = Trade.builder()
-                .orderId(orderId)
-                .userId(userId)
-                .accountId(request.accountId())
-                .symbol(request.symbol().toUpperCase())
-                .tradeType(request.tradeType())
-                .quantity(request.quantity())
-                .status(TradeStatus.PENDING)
-                .createdAt(Instant.now())
-                .build();
-
-
-        Trade saved = tradeRepository.save(trade);
-        Trade executed = orchestrator.execute(saved);
-        return tradeMapper.toResponse(executed);
+        Trade trade = orchestrator.execute(userId, request);
+        return tradeMapper.toResponse(trade);
 
     }
 
