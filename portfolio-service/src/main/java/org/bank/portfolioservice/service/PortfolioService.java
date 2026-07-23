@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bank.portfolioservice.client.MarketDataClient;
 import org.bank.portfolioservice.dto.request.AddAssetRequest;
 import org.bank.portfolioservice.dto.request.CreatePortfolioRequest;
+import org.bank.portfolioservice.dto.request.SellAssetRequest;
 import org.bank.portfolioservice.dto.response.MarketAssetResponse;
 import org.bank.portfolioservice.dto.response.PortfolioAssetResponse;
 import org.bank.portfolioservice.dto.response.PortfolioResponse;
@@ -211,5 +212,32 @@ public class PortfolioService {
         portfolio.setTotalValue(totalValue);
         portfolioRepository.save(portfolio);
         return totalValue;
+    }
+
+
+    @Transactional
+    public void sellAsset(String userId, SellAssetRequest request) {
+        Portfolio portfolio = portfolioRepository.findByUserId(userId).orElseThrow(
+                () -> new PortfolioNotFoundException("Portfolio not found")
+        );
+        PortfolioAsset portfolioAsset = portfolioAssetRepository.findByPortfolioIdAndSymbol(
+                        portfolio.getId(),
+                        request.symbol().toUpperCase()
+                )
+                .orElseThrow(
+                        () -> new PortfolioNotFoundException("asset not found")
+                );
+        if (portfolioAsset.getQuantity().compareTo(request.quantity()) < 0) {
+            throw new InvalidQuantityException("quantity is not enough");
+        }
+
+        BigDecimal remainQuantity = portfolioAsset.getQuantity().subtract(request.quantity());
+        if (remainQuantity.compareTo(BigDecimal.ZERO) == 0) {
+            portfolioAssetRepository.delete(portfolioAsset);
+        } else {
+            portfolioAsset.setQuantity(remainQuantity);
+            portfolioAssetRepository.save(portfolioAsset);
+        }
+
     }
 }

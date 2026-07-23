@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bank.portfolioservice.dto.request.AddAssetRequest;
 import org.bank.portfolioservice.dto.request.CreatePortfolioRequest;
+import org.bank.portfolioservice.dto.request.SellAssetRequest;
 import org.bank.portfolioservice.dto.response.PortfolioAssetResponse;
 import org.bank.portfolioservice.dto.response.PortfolioResponse;
 import org.bank.portfolioservice.service.PortfolioService;
@@ -46,6 +47,11 @@ public class PortfolioController {
     @GetMapping("/assets")
     public List<PortfolioAssetResponse> getAssets(@RequestHeader("X-User-Id") String userId) {
         return service.getAssets(userId);
+    }
+
+    @PostMapping("/me/assets/sell")
+    public void sellAsset(@RequestHeader("X-User-Id") String userId, @Valid @RequestBody SellAssetRequest request) {
+        service.sellAsset(userId, request);
     }
 
 }
