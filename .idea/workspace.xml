@@ -5,21 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/account/AccountCreatedEvent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/auth/UserRegisteredEvent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/kafka/kafkaTopics.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/consumer/TradeDeadLetterConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/consumer/TradeDeadLetterConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/consumer/TradeEventConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/consumer/TradeEventConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/service/PortfolioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/service/PortfolioService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TradeExecutedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/trade/TradeExecutedEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/BuyTradeExecutionStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/BuyTradeExecutionStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/SellTradeExecutionStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/SellTradeExecutionStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/factory/OutboxEventFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/factory/OutboxEventFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/kafka/producer/TradeProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/kafka/producer/TradeProducer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/scheduler/OutboxPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/scheduler/OutboxPublisher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/service/OutboxService.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/service/OutboxService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/NotificationServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/NotificationServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/resources/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,9 +34,9 @@
       <list>
         <option value="Exception" />
         <option value="Record" />
-        <option value="Interface" />
         <option value="Enum" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>

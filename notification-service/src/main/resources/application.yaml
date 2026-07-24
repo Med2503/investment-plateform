@@ -5,20 +5,41 @@ spring:
   application:
     name: notification-service
 
+  datasource:
+    url: jdbc:postgres://localhost:5432/notification_db
+    username: bank_user
+    password: bank_pass
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: notification-service
-      auto-offset-reset: earliest
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: medmed09@gmail.com
+    password: kazkaz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
-      properties:
-        spring.json.trusted.packages: org.bank.sharedevents.event
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    consumer:
+#      group-id: notification-service
+#      auto-offset-reset: earliest
+#
+#
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#
+#      properties:
+#        spring.json.trusted.packages: org.bank.sharedevents.event
 
 
 
