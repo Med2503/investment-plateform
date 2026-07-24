@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TradeProducer {
 
-    private final KafkaTemplate<String, TradeExecutedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final KafkaTopics kafkaTopics;
 
     public void sendTradeExecuted(TradeExecutedEvent event) {

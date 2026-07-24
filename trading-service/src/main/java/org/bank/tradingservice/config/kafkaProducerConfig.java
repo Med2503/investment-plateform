@@ -26,6 +26,16 @@ public class kafkaProducerConfig {
                 StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 JsonSerializer.class);
+        config.put(ProducerConfig.ACKS_CONFIG, "all");
+        config.put(
+                ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG,
+                true
+        );
+        config.put(
+                ProducerConfig.RETRIES_CONFIG,
+                Integer.MAX_VALUE
+        );
+
         return new DefaultKafkaProducerFactory<>(config);
     }
 
