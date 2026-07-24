@@ -23,7 +23,7 @@ public class TradeEventConsumer {
 
     @KafkaListener(
             topics = "trade-executed",
-            groupId = "portfolio-service"
+            groupId = "portfolio-service-group"
     )
     @Transactional
     public void consume(TradeExecutedEvent event) {
