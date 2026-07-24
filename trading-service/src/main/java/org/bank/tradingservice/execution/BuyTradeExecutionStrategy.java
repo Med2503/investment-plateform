@@ -11,8 +11,8 @@ import org.bank.tradingservice.entity.TradeStatus;
 import org.bank.tradingservice.exception.InvalidTradeException;
 import org.bank.tradingservice.gateway.AccountGateway;
 import org.bank.tradingservice.gateway.MarketDataGateway;
-import org.bank.tradingservice.kafka.producer.TradeProducer;
 import org.bank.tradingservice.repository.TradeRepository;
+import org.bank.tradingservice.service.OutboxService;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -28,7 +28,7 @@ public class BuyTradeExecutionStrategy implements TradeExecutionStrategy {
     private final MarketDataGateway marketDataGateway;
     private final AccountGateway accountGateway;
     private final TradeRepository tradeRepository;
-    private final TradeProducer tradeProducer;
+    private final OutboxService outboxService;
 
 
     @Override
@@ -62,7 +62,7 @@ public class BuyTradeExecutionStrategy implements TradeExecutionStrategy {
                     .build();
             Trade saved = tradeRepository.save(trade);
 
-            tradeProducer.sendTradeExecuted(
+            outboxService.saveTradeExecutedEvent(
                     new TradeExecutedEvent(
                             saved.getId(),
 
