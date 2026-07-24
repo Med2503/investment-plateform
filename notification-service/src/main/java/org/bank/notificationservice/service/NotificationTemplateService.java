@@ -2,7 +2,6 @@ package org.bank.notificationservice.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.springframework.stereotype.Service;
 
 
@@ -11,14 +10,21 @@ import org.springframework.stereotype.Service;
 public class NotificationTemplateService {
 
 
-    private final TradeEmailTemplateBuilder tradeBuilder;
+    private final TemplateBuilderFactory factory;
 
 
-    public String buildTradeExecutedEmail(
-            TradeExecutedEvent event
+    public String build(
+            Object event
     ) {
 
-        return tradeBuilder.build(event);
+
+        EmailTemplateBuilder builder =
+                factory.getBuilder(
+                        event.getClass()
+                );
+
+
+        return builder.build(event);
 
     }
 

@@ -73,5 +73,10 @@ public class TradeEmailTemplateBuilder
 
     }
 
+    @Override
+    public Class<?> supports() {
+        return TradeExecutedEvent.class;
+    }
+
 
 }
