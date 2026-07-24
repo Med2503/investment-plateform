@@ -1,4 +1,6 @@
-package org.bank.sharedevents.event;
+package org.bank.sharedevents.event.trade;
+
+import org.bank.sharedevents.event.TradeType;
 
 import java.math.BigDecimal;
 import java.time.Instant;

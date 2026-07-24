@@ -2,7 +2,7 @@ package org.bank.tradingservice.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.bank.tradingservice.entity.OutboxEvent;
 import org.bank.tradingservice.factory.OutboxEventFactory;
 import org.bank.tradingservice.repository.OutboxRepository;

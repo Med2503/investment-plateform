@@ -2,7 +2,7 @@ package org.bank.tradingservice.kafka.producer;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.bank.tradingservice.kafka.topics.KafkaTopics;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;

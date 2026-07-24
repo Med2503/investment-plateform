@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.bank.tradingservice.entity.OutboxEvent;
 import org.bank.tradingservice.kafka.producer.TradeProducer;
 import org.bank.tradingservice.repository.OutboxRepository;

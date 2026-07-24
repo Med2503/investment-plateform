@@ -4,7 +4,7 @@ package org.bank.tradingservice.factory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.bank.tradingservice.entity.AggregateType;
 import org.bank.tradingservice.entity.OutboxEvent;
 import org.springframework.stereotype.Component;

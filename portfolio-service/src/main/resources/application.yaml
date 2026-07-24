@@ -18,7 +18,7 @@ spring:
 
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.value.default.type: org.bank.sharedevents.event.TradeExecutedEvent
+        spring.json.value.default.type: org.bank.sharedevents.event.trade.TradeExecutedEvent
 
   datasource:
     url: jdbc:postgresql://localhost:5432/portfolio_db

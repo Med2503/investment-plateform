@@ -3,7 +3,7 @@ package org.bank.portfolioservice.consumer;
 import lombok.RequiredArgsConstructor;
 import org.bank.portfolioservice.service.EventProcessingService;
 import org.bank.portfolioservice.service.PortfolioService;
-import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 

@@ -17,7 +17,7 @@ import org.bank.portfolioservice.mapper.PortfolioAssetMapper;
 import org.bank.portfolioservice.mapper.PortfolioMapper;
 import org.bank.portfolioservice.repository.PortfolioAssetRepository;
 import org.bank.portfolioservice.repository.PortfolioRepository;
-import org.bank.sharedevents.event.TradeExecutedEvent;
+import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.bank.sharedevents.event.TradeType;
 import org.springframework.stereotype.Service;
 
