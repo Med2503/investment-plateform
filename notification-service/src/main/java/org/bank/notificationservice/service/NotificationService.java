@@ -2,6 +2,7 @@ package org.bank.notificationservice.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.bank.notificationservice.command.NotificationCommand;
 import org.bank.notificationservice.dto.request.NotificationRequest;
 import org.bank.notificationservice.dto.response.NotificationResponse;
 import org.bank.notificationservice.entity.Notification;
@@ -20,7 +21,7 @@ public class NotificationService {
     private final NotificationMapper mapper;
     private final NotificationFactory factory;
 
-    public NotificationResponse save(NotificationRequest request) {
+    public NotificationResponse save(NotificationCommand request) {
         Notification notification = factory.create(request);
         Notification saved = repository.save(notification);
         return mapper.toResponse(saved);

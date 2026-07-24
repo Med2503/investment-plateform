@@ -1,7 +1,7 @@
 package org.bank.notificationservice.factory;
 
 
-import org.bank.notificationservice.dto.request.NotificationRequest;
+import org.bank.notificationservice.command.NotificationCommand;
 import org.bank.notificationservice.entity.Notification;
 import org.springframework.stereotype.Component;
 
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 public class NotificationFactory {
 
 
-    public Notification create(NotificationRequest request) {
+    public Notification create(NotificationCommand command) {
         return Notification.builder()
-                .userId(request.userId())
-                .channel(request.channel())
-                .subject(request.subject())
-                .message(request.message())
+                .userId(command.userId())
+                .channel(command.channel())
+                .subject(command.subject())
+                .message(command.message())
                 .build();
     }
 }
