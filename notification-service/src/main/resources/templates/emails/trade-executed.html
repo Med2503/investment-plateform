@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Trade Executed</title>
+
+</head>
+
+<body>
+
+<h2>Hello <span th:text="${userName}"></span>,</h2>
+
+<p>
+
+    Your
+
+    <b th:text="${tradeType}"></b>
+
+    order has been executed successfully.
+
+</p>
+
+<table>
+
+    <tr>
+
+        <td>Symbol</td>
+
+        <td th:text="${symbol}"></td>
+
+    </tr>
+
+    <tr>
+
+        <td>Quantity</td>
+
+        <td th:text="${quantity}"></td>
+
+    </tr>
+
+    <tr>
+
+        <td>Price</td>
+
+        <td th:text="${price}"></td>
+
+    </tr>
+
+    <tr>
+
+        <td>Total</td>
+
+        <td th:text="${total}"></td>
+
+    </tr>
+
+</table>
+
+<p>
+
+    Thank you for using our Investment Platform.
+
+</p>
+
+</body>
+
+</html>
