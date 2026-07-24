@@ -14,6 +14,7 @@ public record TradeExecutedEvent(
         BigDecimal quantity,
         BigDecimal price,
         TradeType tradeType,
+        BigDecimal executedPrice,
         Instant executedAt
 ) {
 }
