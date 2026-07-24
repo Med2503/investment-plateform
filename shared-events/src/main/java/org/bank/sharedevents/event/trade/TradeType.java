@@ -1,4 +1,4 @@
-package org.bank.sharedevents.event;
+package org.bank.sharedevents.event.trade;
 
 public enum TradeType {
     BUY,

@@ -5,8 +5,8 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bank.notificationservice.service.EmailService;
-import org.bank.sharedevents.event.TransferCompletedEvent;
-import org.bank.sharedevents.event.TransferFailedEvent;
+import org.bank.sharedevents.event.transfer.TransferCompletedEvent;
+import org.bank.sharedevents.event.transfer.TransferFailedEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

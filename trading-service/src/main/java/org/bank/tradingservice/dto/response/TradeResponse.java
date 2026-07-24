@@ -1,6 +1,6 @@
 package org.bank.tradingservice.dto.response;
 
-import org.bank.sharedevents.event.TradeType;
+import org.bank.sharedevents.event.trade.TradeType;
 import org.bank.tradingservice.entity.TradeStatus;
 
 

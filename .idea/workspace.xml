@@ -5,10 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/DepositEmailTemplateBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/RiskAlertEmailTemplateBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/WelcomeEmailTemplateBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/WithdrawEmailTemplateBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/account/DepositCompletedEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/account/WithdrawCompletedEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/risk/RiskAlertEvent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/EmailTemplateBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/EmailTemplateBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/NotificationTemplateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/NotificationTemplateService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/TradeEmailTemplateBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/TradeEmailTemplateBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/account-service/src/main/java/org/bank/accountservice/kafka/AuditEventProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/account-service/src/main/java/org/bank/accountservice/kafka/AuditEventProducer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/account-service/src/main/java/org/bank/accountservice/service/AccountService.java" beforeDir="false" afterPath="$PROJECT_DIR$/account-service/src/main/java/org/bank/accountservice/service/AccountService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/consumer/AuditEventConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/consumer/AuditEventConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/service/AuditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/audit-service/src/main/java/org/bank/auditservice/service/AuditService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/consumer/NotificationConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/consumer/NotificationConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/deposit.html" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/deposit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/risk-alert.html" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/risk-alert.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/welcome.html" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/welcome.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/withdraw.html" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/resources/templates/emails/withdraw.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/service/PortfolioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/portfolio-service/src/main/java/org/bank/portfolioservice/service/PortfolioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/AuditEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/audit/AuditEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TradeType.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/trade/TradeType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferCompletedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/transfer/TransferCompletedEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/TransferFailedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/transfer/TransferFailedEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/auth/UserRegisteredEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/auth/UserRegisteredEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/trade/TradeExecutedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/trade/TradeExecutedEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/kafka/kafkaTopics.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/kafka/kafkaTopics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/request/CreateTradeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/request/CreateTradeRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/response/TradeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/dto/response/TradeResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/entity/Trade.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/entity/Trade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/BuyTradeExecutionStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/BuyTradeExecutionStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/SellTradeExecutionStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/SellTradeExecutionStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/TradeExecutionStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/TradeExecutionStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/TradeExecutionStrategyFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/execution/TradeExecutionStrategyFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/service/TransferService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transfer-service/src/main/java/org/bank/transferservice/service/TransferService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +66,8 @@
         <option value="Exception" />
         <option value="Enum" />
         <option value="Interface" />
-        <option value="Record" />
         <option value="Class" />
+        <option value="Record" />
       </list>
     </option>
   </component>

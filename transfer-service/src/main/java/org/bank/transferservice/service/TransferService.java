@@ -3,8 +3,8 @@ package org.bank.transferservice.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.bank.sharedevents.event.TransferCompletedEvent;
-import org.bank.sharedevents.event.TransferFailedEvent;
+import org.bank.sharedevents.event.transfer.TransferCompletedEvent;
+import org.bank.sharedevents.event.transfer.TransferFailedEvent;
 import org.bank.transferservice.dto.CreateTransferRequest;
 import org.bank.transferservice.dto.TransferResponse;
 import org.bank.transferservice.entity.Transfer;

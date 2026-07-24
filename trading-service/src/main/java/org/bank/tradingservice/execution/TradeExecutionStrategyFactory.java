@@ -1,8 +1,7 @@
 package org.bank.tradingservice.execution;
 
 
-import org.bank.sharedevents.event.TradeType;
-import org.bank.tradingservice.entity.Trade;
+import org.bank.sharedevents.event.trade.TradeType;
 import org.bank.tradingservice.exception.InvalidTradeException;
 import org.springframework.stereotype.Component;
 

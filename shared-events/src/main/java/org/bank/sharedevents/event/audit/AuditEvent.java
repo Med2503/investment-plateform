@@ -1,4 +1,4 @@
-package org.bank.sharedevents.event;
+package org.bank.sharedevents.event.audit;
 
 import lombok.*;
 

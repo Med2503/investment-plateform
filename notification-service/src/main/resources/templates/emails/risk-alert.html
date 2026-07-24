@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+
+<h2>
+    Risk Alert
+</h2>
+
+
+<p>
+    Risk level :
+    <span th:text="${riskLevel}">
+HIGH
+</span>
+</p>
+
+
+<p>
+<span th:text="${message}">
+</span>
+</p>
+
+<p>
+    Exposure :
+    <span th:text="${exposureAmount}">
+</span>
+</p>
+
+
+</body>
+
+</html>

@@ -3,7 +3,7 @@ package org.bank.tradingservice.execution;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.bank.sharedevents.event.trade.TradeExecutedEvent;
-import org.bank.sharedevents.event.TradeType;
+import org.bank.sharedevents.event.trade.TradeType;
 import org.bank.tradingservice.dto.request.CreateTradeRequest;
 import org.bank.tradingservice.dto.response.MarketAssetResponse;
 import org.bank.tradingservice.dto.response.PortfolioAssetResponse;

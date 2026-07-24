@@ -2,7 +2,7 @@ package org.bank.tradingservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.bank.sharedevents.event.TradeType;
+import org.bank.sharedevents.event.trade.TradeType;
 
 import java.math.BigDecimal;
 import java.time.Instant;

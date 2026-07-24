@@ -6,9 +6,9 @@ import org.bank.auditservice.entity.AuditLog;
 import org.bank.auditservice.event.ProcessedEvent;
 import org.bank.auditservice.repository.AuditLogRepository;
 import org.bank.auditservice.repository.ProcessedEventRepository;
-import org.bank.sharedevents.event.AuditEvent;
-import org.bank.sharedevents.event.TransferCompletedEvent;
-import org.bank.sharedevents.event.TransferFailedEvent;
+import org.bank.sharedevents.event.audit.AuditEvent;
+import org.bank.sharedevents.event.transfer.TransferCompletedEvent;
+import org.bank.sharedevents.event.transfer.TransferFailedEvent;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

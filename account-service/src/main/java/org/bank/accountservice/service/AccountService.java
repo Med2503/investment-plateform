@@ -11,7 +11,7 @@ import org.bank.accountservice.exception.AccountNotFoundException;
 import org.bank.accountservice.kafka.AuditEventProducer;
 import org.bank.accountservice.mapper.AccountMapper;
 import org.bank.accountservice.repository.AccountRepository;
-import org.bank.sharedevents.event.AuditEvent;
+import org.bank.sharedevents.event.audit.AuditEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
