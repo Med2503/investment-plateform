@@ -1,0 +1,35 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: risk-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/risk_db
+    username: bank_user
+    password: bank_pass
+
+  jpa:
+    hibernate:
+      ddl_auto: update
+    show-sql: true
+
+  kafka:
+    bootstrap-server: localhost:9092
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+  endpoint:
+    health:
+      show-details: always
+

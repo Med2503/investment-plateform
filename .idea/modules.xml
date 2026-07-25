@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/investment-plateform.iml" filepath="$PROJECT_DIR$/.idea/investment-plateform.iml" />
       <module fileurl="file://$PROJECT_DIR$/notification-service/notification-service.iml" filepath="$PROJECT_DIR$/notification-service/notification-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/portfolio-service/portfolio-service.iml" filepath="$PROJECT_DIR$/portfolio-service/portfolio-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/risk-service/risk-service.iml" filepath="$PROJECT_DIR$/risk-service/risk-service.iml" />
     </modules>
   </component>
 </project>

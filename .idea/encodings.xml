@@ -12,6 +12,7 @@
     <file url="file://$PROJECT_DIR$/market-data-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/notification-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/portfolio-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/risk-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared-events/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/trading-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/transfer-service/src/main/java" charset="UTF-8" />

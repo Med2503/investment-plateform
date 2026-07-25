@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bank.notificationservice.entity.FailedNotification;
 import org.bank.notificationservice.entity.FailedNotificationStatus;
 import org.bank.notificationservice.repository.FailedNotificationRepository;
-import org.bank.notificationservice.service.NotificationRetryService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +20,7 @@ public class FailedNotificationRetryScheduler {
     private final FailedNotificationRepository repository;
 
     private final NotificationRetryService retryService;
+    private final NotificationReplayService replayService;
 
     @Scheduled(fixedDelay = 300000)
     public void retryFailedNotifications() {
@@ -35,10 +35,7 @@ public class FailedNotificationRetryScheduler {
 
             try {
 
-                /*
-                 * reutiliser notification-service pour re construire et envoyer la notification
-                 */
-
+                replayService.replay(notification);
                 retryService.success(notification);
 
             } catch (Exception ex) {
