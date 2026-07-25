@@ -1,4 +1,4 @@
-package org.bank.notificationservice.service;
+package org.bank.notificationservice.service.template;
 
 public interface EmailTemplateBuilder {
 

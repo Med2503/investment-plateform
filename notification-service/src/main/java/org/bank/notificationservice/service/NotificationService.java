@@ -6,6 +6,7 @@ import org.bank.notificationservice.command.NotificationCommand;
 import org.bank.notificationservice.entity.Notification;
 import org.bank.notificationservice.factory.NotificationFactory;
 import org.bank.notificationservice.factory.NotificationStrategyFactory;
+import org.bank.notificationservice.service.template.NotificationTemplateService;
 import org.bank.notificationservice.strategy.NotificationStrategy;
 
 import org.springframework.stereotype.Service;

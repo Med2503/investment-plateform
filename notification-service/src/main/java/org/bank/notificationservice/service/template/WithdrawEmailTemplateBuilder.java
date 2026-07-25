@@ -1,4 +1,4 @@
-package org.bank.notificationservice.service;
+package org.bank.notificationservice.service.template;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.sharedevents.event.account.WithdrawCompletedEvent;

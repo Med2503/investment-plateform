@@ -1,13 +1,17 @@
 package org.bank.notificationservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "failed_notifications")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class FailedNotification {
 
@@ -42,5 +46,12 @@ public class FailedNotification {
 
     private Instant lastRetryAt;
     private Instant completedAt;
+
+
+    @Builder.Default
+    private Integer maxRetry = 5;
+
+    @Builder.Default
+    private Instant nextRetryAt = Instant.now();
 
 }

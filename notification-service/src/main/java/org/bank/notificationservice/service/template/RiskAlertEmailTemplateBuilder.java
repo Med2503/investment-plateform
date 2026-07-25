@@ -1,8 +1,8 @@
-package org.bank.notificationservice.service;
+package org.bank.notificationservice.service.template;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bank.sharedevents.event.auth.UserRegisteredEvent;
+import org.bank.sharedevents.event.risk.RiskAlertEvent;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -10,42 +10,56 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Component
 @RequiredArgsConstructor
-public class WelcomeEmailTemplateBuilder
+public class RiskAlertEmailTemplateBuilder
         implements EmailTemplateBuilder {
 
 
+
     private final SpringTemplateEngine templateEngine;
+
 
 
     @Override
     public String build(Object event) {
 
 
-        UserRegisteredEvent userEvent =
-                (UserRegisteredEvent) event;
+        RiskAlertEvent risk =
+                (RiskAlertEvent) event;
 
 
         Context context = new Context();
 
 
         context.setVariable(
-                "firstName",
-                userEvent.firstName()
+                "riskLevel",
+                risk.riskLevel()
+        );
+
+
+        context.setVariable(
+                "message",
+                risk.message()
+        );
+
+        context.setVariable(
+                "exposureAmount",
+                risk.exposureAmount()
         );
 
 
         return templateEngine.process(
-                "emails/welcome",
+                "emails/risk-alert",
                 context
         );
 
     }
 
 
+
     @Override
     public Class<?> supports() {
 
-        return UserRegisteredEvent.class;
+        return RiskAlertEvent.class;
 
     }
 
