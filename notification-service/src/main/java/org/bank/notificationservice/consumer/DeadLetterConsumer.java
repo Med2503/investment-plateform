@@ -2,13 +2,12 @@ package org.bank.notificationservice.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bank.notificationservice.repository.FailedNotificationRepository;
+import org.bank.notificationservice.metrics.NotificationMetrics;
 import org.bank.notificationservice.service.FailedNotificationService;
 import org.bank.sharedevents.kafka.kafkaTopics;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DeadLetterConsumer {
     private final FailedNotificationService service;
+    private final NotificationMetrics metrics;
 
     @KafkaListener(
 
@@ -38,6 +38,7 @@ public class DeadLetterConsumer {
     )
     public void consume(String payload, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
 
+        metrics.getDlqMessages().increment();
         service.save(topic, payload, extractEventType(topic), "Message in dlt");
 
     }

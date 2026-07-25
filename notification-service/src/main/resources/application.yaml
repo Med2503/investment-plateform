@@ -50,7 +50,25 @@ spring:
 #      properties:
 #        spring.json.trusted.packages: org.bank.sharedevents.event
 
+management:
 
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+  endpoint:
+
+    health:
+      show-details: always
+
+  metrics:
+
+    tags:
+      application:
 
 eureka:
   client:

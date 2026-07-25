@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bank.notificationservice.entity.Notification;
+import org.bank.notificationservice.metrics.NotificationMetrics;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ public class EmailProvider {
 
 
     private final JavaMailSender mailSender;
-
+    private final NotificationMetrics metrics;
 
 
     public void send(
@@ -31,7 +32,6 @@ public class EmailProvider {
 
             MimeMessage message =
                     mailSender.createMimeMessage();
-
 
 
             MimeMessageHelper helper =
@@ -52,11 +52,9 @@ public class EmailProvider {
             );
 
 
-
             helper.setSubject(
                     notification.getSubject()
             );
-
 
 
             helper.setText(
@@ -65,9 +63,9 @@ public class EmailProvider {
             );
 
 
-
             mailSender.send(message);
 
+            metrics.getEmailsSent().increment();
 
 
             log.info(
@@ -76,10 +74,9 @@ public class EmailProvider {
             );
 
 
+        } catch (MessagingException e) {
 
-        }
-        catch (MessagingException e) {
-
+            metrics.getEmailsFailed().increment();
 
             log.error(
                     "Email sending failed for user {}",

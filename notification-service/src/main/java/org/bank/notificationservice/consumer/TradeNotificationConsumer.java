@@ -2,6 +2,7 @@ package org.bank.notificationservice.consumer;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.notificationservice.facade.NotificationFacade;
+import org.bank.notificationservice.metrics.NotificationMetrics;
 import org.bank.notificationservice.service.IdempotencyService;
 import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.bank.sharedevents.kafka.kafkaTopics;
@@ -17,6 +18,7 @@ public class TradeNotificationConsumer {
 
     private final NotificationFacade facade;
     private final IdempotencyService idempotencyService;
+    private final NotificationMetrics metrics;
 
 
     @RetryableTopic(
@@ -45,6 +47,9 @@ public class TradeNotificationConsumer {
         if (idempotencyService.alreadyProcessed(eventId)) {
             return;
         }
+
+        metrics.getKafkaMessagesConsumed().increment();
+
 
         facade.handleTradeExecuted(event);
 
