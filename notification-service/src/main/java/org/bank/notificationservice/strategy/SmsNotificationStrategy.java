@@ -14,7 +14,7 @@ public class SmsNotificationStrategy implements NotificationStrategy {
 
 
     @Override
-    public void send(Notification notification) {
+    public void send(Notification notification, String content) {
         smsProvider.send(notification);
     }
 

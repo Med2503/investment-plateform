@@ -13,7 +13,7 @@ public class PushNotificationStrategy implements NotificationStrategy {
     private final PushProvider pushProvider;
 
     @Override
-    public void send(Notification notification) {
+    public void send(Notification notification, String content) {
         pushProvider.send(notification);
     }
 

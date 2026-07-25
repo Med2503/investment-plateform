@@ -12,8 +12,8 @@ public class EmailNotificationStrategy implements NotificationStrategy {
     private final EmailProvider emailProvider;
 
     @Override
-    public void send(Notification notification) {
-        emailProvider.send(notification);
+    public void send(Notification notification,String content) {
+        emailProvider.send(notification, content);
     }
 
     @Override

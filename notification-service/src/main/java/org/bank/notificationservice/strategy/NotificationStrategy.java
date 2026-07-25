@@ -5,7 +5,7 @@ import org.bank.notificationservice.entity.NotificationChannel;
 
 public interface NotificationStrategy {
 
-    void send(Notification notification);
+    void send(Notification notification, String content);
 
     NotificationChannel supports();
 }
