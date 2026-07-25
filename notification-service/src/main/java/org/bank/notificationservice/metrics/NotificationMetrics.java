@@ -3,6 +3,7 @@ package org.bank.notificationservice.metrics;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,8 @@ public class NotificationMetrics {
     private final Counter emailsFailed;
     private final Counter kafkaMessagesConsumed;
     private final Counter dlqMessages;
+    private final Timer emailProcessingTimer;
+
 
     public NotificationMetrics(MeterRegistry registry) {
         emailsSent = Counter.builder(
@@ -46,6 +49,16 @@ public class NotificationMetrics {
                         )
                         .description(
                                 "Total messages sent to DLQ"
+                        )
+                        .register(registry);
+        emailProcessingTimer =
+                Timer.builder("notification_email_processing_seconds")
+                        .description("Email processing duration")
+                        .publishPercentileHistogram()
+                        .publishPercentiles(
+                                0.50,
+                                0.95,
+                                0.99
                         )
                         .register(registry);
     }

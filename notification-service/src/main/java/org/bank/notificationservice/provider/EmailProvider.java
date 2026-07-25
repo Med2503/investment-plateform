@@ -1,5 +1,6 @@
 package org.bank.notificationservice.provider;
 
+import io.micrometer.core.instrument.Timer;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class EmailProvider {
             String htmlContent
     ) {
 
-
+        Timer.Sample sample = Timer.start();
         try {
 
 
@@ -64,6 +65,8 @@ public class EmailProvider {
 
 
             mailSender.send(message);
+
+            sample.stop(metrics.getEmailProcessingTimer());
 
             metrics.getEmailsSent().increment();
 
