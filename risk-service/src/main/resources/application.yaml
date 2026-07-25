@@ -33,3 +33,47 @@ management:
     health:
       show-details: always
 
+resilience4j:
+
+  circuitbreaker:
+
+    instances:
+
+      marketData:
+
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+      portfolio:
+
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+
+      account:
+
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+
+  retry:
+
+    instances:
+
+      marketData:
+
+        maxAttempts: 3
+        waitDuration: 2s
+
+      portfolio:
+
+        maxAttempts: 3
+        waitDuration: 2s
+
+      account:
+
+        maxAttempts: 3
+        waitDuration: 2s
+
