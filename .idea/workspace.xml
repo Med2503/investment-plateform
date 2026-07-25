@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/provider/EmailProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/provider/EmailProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/NotificationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/EmailNotificationStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/EmailNotificationStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/NotificationStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/NotificationStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/PushNotificationStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/PushNotificationStrategy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/SmsNotificationStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/strategy/SmsNotificationStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/kafka/kafkaTopics.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/kafka/kafkaTopics.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,8 +34,8 @@
         <option value="Exception" />
         <option value="Enum" />
         <option value="Interface" />
-        <option value="Class" />
         <option value="Record" />
+        <option value="Class" />
       </list>
     </option>
   </component>
