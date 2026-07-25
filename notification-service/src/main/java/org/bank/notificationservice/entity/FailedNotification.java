@@ -25,4 +25,22 @@ public class FailedNotification {
     @Column(nullable = false)
     private Instant failedAt = Instant.now();
 
+
+    @Column(nullable = false)
+    private String eventType;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer retryCount = 0;
+
+    @Column(length = 3000)
+    private String lastError;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private FailedNotificationStatus status = FailedNotificationStatus.PENDING;
+
+    private Instant lastRetryAt;
+    private Instant completedAt;
+
 }

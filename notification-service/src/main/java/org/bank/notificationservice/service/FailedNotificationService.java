@@ -15,10 +15,13 @@ public class FailedNotificationService {
 
 
     @Transactional
-    public void save(String topic, String payload) {
+    public void save(String topic, String payload, String eventType,
+                     String error) {
         FailedNotification notification = FailedNotification.builder()
                 .topic(topic)
                 .payload(payload)
+                .eventType(eventType)
+                .lastError(error)
                 .build();
         repository.save(notification);
     }

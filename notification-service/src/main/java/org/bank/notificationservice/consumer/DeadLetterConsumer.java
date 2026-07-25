@@ -38,8 +38,12 @@ public class DeadLetterConsumer {
     )
     public void consume(String payload, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
 
-        service.save(topic, payload);
+        service.save(topic, payload, extractEventType(topic), "Message in dlt");
 
+    }
+
+    private String extractEventType(String topic) {
+        return topic.replace("-dlt", "");
     }
 
 }
