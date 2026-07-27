@@ -77,3 +77,26 @@ resilience4j:
         maxAttempts: 3
         waitDuration: 2s
 
+risk:
+
+  max-trade-amount: 1080000
+
+  supported-symbols:
+
+    - INS
+    - FBC
+    - DAX
+    - FNB
+    - GMARK
+
+  blacklisted-symbols:
+
+    - TEST
+    - FAKE
+
+  market:
+
+    open: "11:50"
+    close: "19:35"
+
+

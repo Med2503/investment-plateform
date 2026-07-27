@@ -1,6 +1,7 @@
 package org.bank.riskservice.rule;
 
 import lombok.RequiredArgsConstructor;
+import org.bank.riskservice.config.RiskProperties;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
@@ -13,14 +14,13 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class MaxTradeAmountRule implements RiskRule {
 
-    @Value("${risk.max-trade-amount}")
-    private BigDecimal maxTradeAmount;
+    private final RiskProperties properties;
 
 
     @Override
 
     public RiskDecision evaluate(RiskContext riskContext) {
-        if (riskContext.totalAmount().compareTo(maxTradeAmount) > 0) {
+        if (riskContext.totalAmount().compareTo(properties.getMaxTradeAmount()) > 0) {
             return RiskDecision.builder()
                     .status(RiskDecisionStatus.REJECTED)
                     .reason("greater than max trade amount ")
