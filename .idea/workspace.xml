@@ -7,10 +7,6 @@
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/RiskServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/RiskServiceApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MarketHoursRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MarketHoursRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MaxTradeAmountRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MaxTradeAmountRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/SupportedSymbolRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/SupportedSymbolRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/resources/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,11 +32,11 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Exception" />
-        <option value="Record" />
-        <option value="Interface" />
         <option value="package-info" />
         <option value="Enum" />
+        <option value="Record" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
