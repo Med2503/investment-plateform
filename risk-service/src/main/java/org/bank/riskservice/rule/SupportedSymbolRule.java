@@ -6,6 +6,7 @@ import org.bank.riskservice.config.RiskProperties;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
+import org.bank.riskservice.util.RiskDecisions;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -19,15 +20,9 @@ public class SupportedSymbolRule implements RiskRule {
 
     @Override
     public RiskDecision evaluate(RiskContext riskContext) {
-        if (!properties.getSupportedSymbols().contains(riskContext.symbol())){
-            return RiskDecision.builder()
-                    .status(RiskDecisionStatus.REJECTED)
-                    .reason("Unsupported symbol")
-                    .build();
+        if (!properties.getSupportedSymbols().contains(riskContext.symbol())) {
+            return RiskDecisions.rejected("unsupported symbol");
         }
-        return RiskDecision.builder()
-                .status(RiskDecisionStatus.APPROVED)
-                .reason("OK")
-                .build();
+        return RiskDecisions.approved();
     }
 }

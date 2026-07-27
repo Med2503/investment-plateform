@@ -5,6 +5,7 @@ import org.bank.riskservice.config.RiskProperties;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
+import org.bank.riskservice.util.RiskDecisions;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -19,15 +20,9 @@ public class BlacklistedAssetRule implements RiskRule {
 
         if (properties.getBlackListedSymbols().contains(context.symbol())) {
 
-            return RiskDecision.builder()
-                    .status(RiskDecisionStatus.REJECTED)
-                    .reason("Asset is blacklisted")
-                    .build();
+            return RiskDecisions.rejected("Asset is blacklisted");
         }
 
-        return RiskDecision.builder()
-                .status(RiskDecisionStatus.APPROVED)
-                .reason("OK")
-                .build();
+        return RiskDecisions.approved();
     }
 }
