@@ -100,3 +100,27 @@ risk:
     close: "19:35"
 
 
+
+  cloud:
+
+    openfeign:
+
+      client:
+
+        config:
+
+          default:
+
+            connectTimeout: 3000
+
+            readTimeout: 5000
+
+            loggerLevel: basic
+
+            compression:
+
+              request:
+                enabled: true
+
+              response:
+                enabled: true
