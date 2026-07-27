@@ -6,6 +6,7 @@ import org.bank.riskservice.config.RiskProperties;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
+import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class MarketHoursRule implements RiskRule {
         LocalTime now = LocalTime.now(ZoneOffset.UTC);
 
         if (now.isBefore(properties.getMarket().getOpen()) || now.isAfter(properties.getMarket().getClose())) {
-            return RiskDecisions.rejected("Market is closed");
+            return RiskDecisions.rejected(RiskRejectionReason.MARKET_CLOSED, "Market is closed");
         }
         return RiskDecisions.approved();
     }

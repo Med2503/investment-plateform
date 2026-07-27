@@ -4,6 +4,7 @@ package org.bank.riskservice.rule;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
+import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class PositiveQuantityRule implements RiskRule {
     public RiskDecision evaluate(RiskContext riskContext) {
 
         if (riskContext.quantity().signum() <= 0) {
-            RiskDecisions.rejected("should be greater than 0");
+            RiskDecisions.rejected(RiskRejectionReason.INVALID_QUANTITY, "should be greater than 0");
         }
 
         return RiskDecisions.approved();

@@ -6,6 +6,7 @@ import lombok.Builder;
 @Builder
 public record RiskDecision(
         RiskDecisionStatus status,
+        RiskRejectionReason rejectionReason,
         String reason
 ) {
 

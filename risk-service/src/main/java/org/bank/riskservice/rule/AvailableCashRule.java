@@ -7,6 +7,7 @@ import org.bank.riskservice.gateway.AccountGateway;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
+import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
 import org.bank.sharedevents.event.trade.TradeType;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class AvailableCashRule implements RiskRule {
         AccountBalanceResponse balance = accountGateway.getBalance(riskContext.accountId());
 
         if (balance.availableBalance().compareTo(riskContext.totalAmount()) < 0) {
-            RiskDecisions.rejected("Insufficient balance");
+            RiskDecisions.rejected(RiskRejectionReason.INSUFFICIENT_AVAILABLE_BALANCE, "Insufficient balance");
         }
         return RiskDecisions.approved();
 
