@@ -1,4 +1,4 @@
-package org.bank.riskservice.dto;
+package org.bank.riskservice.dto.response;
 
 import java.math.BigDecimal;
 

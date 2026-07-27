@@ -2,7 +2,7 @@ package org.bank.riskservice.gateway;
 
 
 import org.bank.riskservice.config.FeignClientConfiguration;
-import org.bank.riskservice.dto.CustomerRiskProfileResponse;
+import org.bank.riskservice.dto.response.CustomerRiskProfileResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
