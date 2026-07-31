@@ -20,5 +20,11 @@ public record RiskContext(
 
 ) {
 
+    public boolean isBuy() {
+        return tradeType == TradeType.BUY;
+    }
 
+    public boolean isSell() {
+        return tradeType == TradeType.SELL;
+    }
 }

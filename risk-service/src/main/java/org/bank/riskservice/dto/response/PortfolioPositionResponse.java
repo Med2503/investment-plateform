@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public record PortfolioPositionResponse(
         String symbol,
-        BigDecimal quantity
+        BigDecimal quantity,
+        BigDecimal averagePrice,
+        BigDecimal marketValue
 ) {
 }
