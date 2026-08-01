@@ -63,6 +63,30 @@ resilience4j:
         slidingWindowSize: 10
         failureRateThreshold: 50
 
+  cloud:
+
+    openfeign:
+
+      client:
+
+        config:
+
+          default:
+
+            connectTimeout: 3000
+
+            readTimeout: 5000
+
+            loggerLevel: basic
+
+            compression:
+
+              request:
+                enabled: true
+
+              response:
+                enabled: true
+
 
 
 
@@ -113,29 +137,10 @@ risk:
     open: "11:50"
     close: "19:35"
 
+  volatility:
 
+    low-limit: 20
 
-  cloud:
+    medium-limit: 50
 
-    openfeign:
-
-      client:
-
-        config:
-
-          default:
-
-            connectTimeout: 3000
-
-            readTimeout: 5000
-
-            loggerLevel: basic
-
-            compression:
-
-              request:
-                enabled: true
-
-              response:
-                enabled: true
 

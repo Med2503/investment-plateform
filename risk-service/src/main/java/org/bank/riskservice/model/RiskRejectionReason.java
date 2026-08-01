@@ -21,5 +21,6 @@ public enum RiskRejectionReason {
 
     RISK_PROFILE_NOT_ALLOWED,
 
-    SERVICE_UNAVAILABLE
+    SERVICE_UNAVAILABLE,
+    HIGH_VOLATILITY
 }

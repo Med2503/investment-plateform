@@ -15,7 +15,8 @@ public record RiskContext(
         TradeType tradeType,
         BigDecimal quantity,
         BigDecimal currentPrice,
-        BigDecimal totalAmount
+        BigDecimal totalAmount,
+        RiskProfile riskProfile
 
 
 ) {

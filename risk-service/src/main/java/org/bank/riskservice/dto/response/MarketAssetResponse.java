@@ -1,9 +1,18 @@
 package org.bank.riskservice.dto.response;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 
 public record MarketAssetResponse(
+
+        UUID id,
         String symbol,
-        BigDecimal currentPrice
+        String name,
+        BigDecimal currentPrice,
+        String currency,
+        BigDecimal volatility,
+        Instant lastUpdated
+
 ) {
 }
