@@ -30,7 +30,7 @@
         <module name="account-service" />
         <module name="notification-service" />
       </profile>
-      <profile name="Annotation profile for transfer-service" enabled="true">
+      <profile name="Annotation profile for risk-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -42,8 +42,8 @@
         <module name="audit-service" />
         <module name="api-gateway" />
         <module name="shared-events" />
-        <module name="trading-service" />
         <module name="risk-service" />
+        <module name="trading-service" />
         <module name="transfer-service" />
         <module name="portfolio-service" />
       </profile>

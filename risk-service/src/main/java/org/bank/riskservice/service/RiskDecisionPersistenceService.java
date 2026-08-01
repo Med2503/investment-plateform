@@ -2,20 +2,23 @@ package org.bank.riskservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.riskservice.entity.RiskDecisionEntity;
-import org.bank.riskservice.messaging.RiskDecisionEventPublisher;
+import org.bank.riskservice.mapper.OutboxEventMapper;
 import org.bank.riskservice.model.DecisionStatus;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.repository.RiskDecisionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class RiskDecisionPersistenceService {
 
     private final RiskDecisionRepository decisionRepository;
-    private final RiskDecisionEventPublisher publisher;
+    private final OutboxService outboxService;
+    private final OutboxEventMapper outboxEventMapper;
 
+    @Transactional
     public void save(RiskContext context, RiskDecision decision) {
         RiskDecisionEntity riskDecision =
                 RiskDecisionEntity.builder()
@@ -26,7 +29,9 @@ public class RiskDecisionPersistenceService {
                         .rejectionReason(decision.rejectionReason() != null ? decision.rejectionReason().name() : null)
                         .rejectionReason(decision.reason())
                         .build();
-        RiskDecisionEntity save = decisionRepository.save(riskDecision);
-        publisher.publish(save);
+        RiskDecisionEntity saveEntity = decisionRepository.save(riskDecision);
+        outboxService.save(
+                outboxEventMapper.toOutboxEvent(saveEntity));
+
     }
 }
