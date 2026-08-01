@@ -58,6 +58,14 @@ resilience4j:
         minimumNumberOfCalls: 5
         failureRateThreshold: 50
 
+      customer:
+
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+
+
+
+
   retry:
 
     instances:
@@ -76,6 +84,12 @@ resilience4j:
 
         maxAttempts: 3
         waitDuration: 2s
+
+      customer:
+
+        maxAttempts: 3
+
+        waitDuration: 500 ms
 
 risk:
 
