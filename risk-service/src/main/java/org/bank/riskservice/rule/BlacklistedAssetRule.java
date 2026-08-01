@@ -6,9 +6,11 @@ import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(RiskRuleOrder.BLACKLISTED_SYMBOL)
 @RequiredArgsConstructor
 public class BlacklistedAssetRule implements RiskRule {
     private final RiskProperties properties;

@@ -8,12 +8,14 @@ import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
 import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 
 @Component
+@Order(RiskRuleOrder.MARKET_HOURS)
 @RequiredArgsConstructor
 public class MarketHoursRule implements RiskRule {
     private final RiskProperties properties;

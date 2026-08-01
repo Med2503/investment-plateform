@@ -8,9 +8,11 @@ import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
 import org.bank.sharedevents.event.trade.TradeType;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(RiskRuleOrder.POSITION_LIMIT)
 @RequiredArgsConstructor
 public class PositionLimitRule implements RiskRule {
 

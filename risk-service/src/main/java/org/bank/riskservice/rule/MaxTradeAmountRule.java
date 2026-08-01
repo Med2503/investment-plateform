@@ -8,11 +8,13 @@ import org.bank.riskservice.model.RiskDecisionStatus;
 import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 @Component
+@Order(RiskRuleOrder.MAX_TRADE_AMOUNT)
 @RequiredArgsConstructor
 public class MaxTradeAmountRule implements RiskRule {
 

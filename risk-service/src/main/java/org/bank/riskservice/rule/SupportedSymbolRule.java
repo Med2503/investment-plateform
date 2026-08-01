@@ -8,11 +8,13 @@ import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
 import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Component
+@Order(RiskRuleOrder.SUPPORTED_SYMBOL)
 @RequiredArgsConstructor
 public class SupportedSymbolRule implements RiskRule {
 

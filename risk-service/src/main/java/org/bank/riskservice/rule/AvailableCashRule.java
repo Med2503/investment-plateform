@@ -10,9 +10,11 @@ import org.bank.riskservice.model.RiskDecisionStatus;
 import org.bank.riskservice.model.RiskRejectionReason;
 import org.bank.riskservice.util.RiskDecisions;
 import org.bank.sharedevents.event.trade.TradeType;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(RiskRuleOrder.AVAILABLE_CASH)
 @RequiredArgsConstructor
 public class AvailableCashRule implements RiskRule {
 
