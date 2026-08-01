@@ -13,4 +13,5 @@ public final class RiskRuleOrder {
     public static final int DAILY_EXPOSURE = 120;
     public static final int USER_RISK_PROFILE = 130;
     public static final int VOLATILITY = 140;
+    public static final int AML = 150;
 }

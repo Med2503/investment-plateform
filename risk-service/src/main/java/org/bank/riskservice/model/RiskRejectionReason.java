@@ -22,5 +22,10 @@ public enum RiskRejectionReason {
     RISK_PROFILE_NOT_ALLOWED,
 
     SERVICE_UNAVAILABLE,
-    HIGH_VOLATILITY
+
+    HIGH_VOLATILITY,
+
+    AML_BLOCKED,
+
+    AML_LIMIT_EXCEEDED
 }
