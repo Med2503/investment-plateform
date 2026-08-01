@@ -2,6 +2,7 @@ package org.bank.riskservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.riskservice.entity.RiskDecisionEntity;
+import org.bank.riskservice.messaging.RiskDecisionEventPublisher;
 import org.bank.riskservice.model.DecisionStatus;
 import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class RiskDecisionPersistenceService {
 
     private final RiskDecisionRepository decisionRepository;
+    private final RiskDecisionEventPublisher publisher;
 
     public void save(RiskContext context, RiskDecision decision) {
         RiskDecisionEntity riskDecision =
@@ -24,6 +26,7 @@ public class RiskDecisionPersistenceService {
                         .rejectionReason(decision.rejectionReason() != null ? decision.rejectionReason().name() : null)
                         .rejectionReason(decision.reason())
                         .build();
-        decisionRepository.save(riskDecision);
+        RiskDecisionEntity save = decisionRepository.save(riskDecision);
+        publisher.publish(save);
     }
 }

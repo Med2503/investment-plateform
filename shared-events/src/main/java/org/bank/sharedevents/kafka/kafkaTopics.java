@@ -17,6 +17,9 @@ public class kafkaTopics {
     public static final String WITHDRAW_COMPLETED_DLT = "withdraw-completed-dlt";
     public static final String RISK_ALERT_DLT = "risk-alert-dlt";
 
+    public static final String RISK_DECISION_CREATED =
+            "risk-decision-created";
+
     private kafkaTopics() {
 
     }
