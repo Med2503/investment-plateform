@@ -17,7 +17,10 @@ public record CreateMarketAssetRequest(
         BigDecimal currentPrice,
 
         @NotBlank
-        String currency
+        String currency,
+
+        BigDecimal volatility
+
 
 ) {
 }

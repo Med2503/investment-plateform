@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MarketAssetRepository extends JpaRepository<MarketAsset, UUID> {
-    Optional<MarketAsset> findBySymbol(String symbol);
+    Optional<MarketAsset> findBySymbolIgnoreCase(String symbol);
 
     boolean existsBySymbol(String symbol);
 

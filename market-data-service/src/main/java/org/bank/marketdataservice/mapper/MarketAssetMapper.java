@@ -15,7 +15,8 @@ public class MarketAssetMapper {
                 asset.getName(),
                 asset.getCurrentPrice(),
                 asset.getCurrency(),
-                asset.getLastUpdated()
+                asset.getLastUpdated(),
+                asset.getVolatility()
         );
 
     }

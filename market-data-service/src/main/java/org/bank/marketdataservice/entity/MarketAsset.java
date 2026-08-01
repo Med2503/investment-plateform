@@ -40,4 +40,11 @@ public class MarketAsset {
     @Column(nullable = false)
     private Instant lastUpdated;
 
+
+    @Column(
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal volatility;
+
 }

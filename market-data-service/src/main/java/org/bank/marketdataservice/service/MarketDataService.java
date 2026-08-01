@@ -49,6 +49,7 @@ public class MarketDataService {
                 .currentPrice(request.currentPrice())
                 .currency(request.currency().toUpperCase())
                 .lastUpdated(Instant.now())
+                .volatility(request.volatility())
                 .build();
 
         return mapper.toResponse(
@@ -65,7 +66,7 @@ public class MarketDataService {
     ) {
 
         MarketAsset asset =
-                marketAssetRepository.findBySymbol(symbol.toUpperCase())
+                marketAssetRepository.findBySymbolIgnoreCase(symbol)
                         .orElseThrow(
                                 () -> new MarketAssetNotFoundException(
                                         "Market asset not found"
@@ -103,7 +104,7 @@ public class MarketDataService {
 
 
         MarketAsset asset =
-                marketAssetRepository.findBySymbol(symbol.toUpperCase())
+                marketAssetRepository.findBySymbolIgnoreCase(symbol)
                         .orElseThrow(
                                 () -> new MarketAssetNotFoundException(
                                         "Market asset not found"
@@ -143,7 +144,7 @@ public class MarketDataService {
     ) {
 
         MarketAsset asset =
-                marketAssetRepository.findBySymbol(symbol.toUpperCase())
+                marketAssetRepository.findBySymbolIgnoreCase(symbol)
                         .orElseThrow(
                                 () -> new MarketAssetNotFoundException(
                                         "Market asset not found"
@@ -156,20 +157,19 @@ public class MarketDataService {
 
     @Transactional
     public MarketAssetResponse refreshPrice(String symbol) {
-        MarketAsset asset = marketAssetRepository.findBySymbol(symbol.toUpperCase())
+        MarketAsset asset = marketAssetRepository.findBySymbolIgnoreCase(symbol)
                 .orElseThrow(
                         () -> new MarketAssetNotFoundException("not found!")
                 );
         BigDecimal oldPrice = asset.getCurrentPrice();
         BigDecimal newPrice = marketDataProvider.getCurrentPrice(symbol);
 
-        if(newPrice.compareTo(BigDecimal.ZERO)<=0){
+        if (newPrice.compareTo(BigDecimal.ZERO) <= 0) {
 
             throw new InvalidMarketPriceException(
                     "Invalid provider price"
             );
         }
-
 
 
         asset.setCurrentPrice(
@@ -180,7 +180,6 @@ public class MarketDataService {
         asset.setLastUpdated(
                 Instant.now()
         );
-
 
 
         MarketAsset saved =
@@ -196,7 +195,6 @@ public class MarketDataService {
                         saved.getLastUpdated()
                 )
         );
-
 
 
         return mapper.toResponse(saved);

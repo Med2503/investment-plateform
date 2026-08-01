@@ -16,7 +16,8 @@ public record MarketAssetResponse(
 
         String currency,
 
-        Instant lastUpdated
+        Instant lastUpdated,
+        BigDecimal volatility
 
 ) {
 }
