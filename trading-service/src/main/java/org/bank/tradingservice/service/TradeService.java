@@ -26,6 +26,7 @@ public class TradeService {
 
     private final TradeMapper tradeMapper;
     private final TradeExecutionOrchestrator orchestrator;
+    private final TradeRepository tradeRepository;
 
     @Transactional
     public TradeResponse createTrade(String userId, CreateTradeRequest request) {

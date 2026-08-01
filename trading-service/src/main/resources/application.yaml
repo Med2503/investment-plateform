@@ -63,3 +63,5 @@ resilence4j:
 
 
 
+trading:
+  max-daily-exposure: 190000

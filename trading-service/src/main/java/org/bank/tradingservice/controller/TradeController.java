@@ -4,7 +4,9 @@ package org.bank.tradingservice.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bank.tradingservice.dto.request.CreateTradeRequest;
+import org.bank.tradingservice.dto.response.DailyExposureResponse;
 import org.bank.tradingservice.dto.response.TradeResponse;
+import org.bank.tradingservice.service.ExposureService;
 import org.bank.tradingservice.service.TradeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class TradeController {
 
     private final TradeService service;
+    private final ExposureService exposureService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -39,4 +42,9 @@ public class TradeController {
         return service.getMyTrades(userId);
     }
 
+
+    @GetMapping("/exposure/{userId}")
+    public DailyExposureResponse getExposure(@PathVariable String userId) {
+        return exposureService.getExposure(userId);
+    }
 }

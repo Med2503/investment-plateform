@@ -6,13 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/AvailableCashRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/AvailableCashRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/BlacklistedAssetRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/BlacklistedAssetRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MarketHoursRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MarketHoursRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MaxTradeAmountRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/MaxTradeAmountRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/PositionLimitRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/PositionLimitRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/PositiveQuantityRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/PositiveQuantityRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/SupportedSymbolRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/rule/SupportedSymbolRule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/config/RiskProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/config/RiskProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/dto/response/DailyExposureResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/dto/response/DailyExposureResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/gateway/TradingGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/gateway/TradingGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/controller/TradeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/controller/TradeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/repository/TradeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/repository/TradeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/service/TradeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/java/org/bank/tradingservice/service/TradeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trading-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/trading-service/src/main/resources/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,8 +41,8 @@
         <option value="Exception" />
         <option value="package-info" />
         <option value="Enum" />
-        <option value="Record" />
         <option value="Interface" />
+        <option value="Record" />
         <option value="Class" />
       </list>
     </option>

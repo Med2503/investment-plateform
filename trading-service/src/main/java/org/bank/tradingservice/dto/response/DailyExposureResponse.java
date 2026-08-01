@@ -1,10 +1,12 @@
-package org.bank.riskservice.dto.response;
+package org.bank.tradingservice.dto.response;
 
 import java.math.BigDecimal;
 
 public record DailyExposureResponse(
-        BigDecimal exposure,
+        BigDecimal todayExposure,
+
         BigDecimal remainingExposure,
+
         BigDecimal maximumExposure
 ) {
 }

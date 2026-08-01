@@ -19,6 +19,7 @@ public class RiskProperties {
     private List<String> supportedSymbols = new ArrayList<>();
     private List<String> blackListedSymbols = new ArrayList<>();
 
+
     private Market market = new Market();
 
 
