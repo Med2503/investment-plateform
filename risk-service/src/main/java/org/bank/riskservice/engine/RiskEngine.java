@@ -6,6 +6,7 @@ import org.bank.riskservice.model.RiskContext;
 import org.bank.riskservice.model.RiskDecision;
 import org.bank.riskservice.model.RiskDecisionStatus;
 import org.bank.riskservice.rule.RiskRule;
+import org.bank.riskservice.service.RiskDecisionPersistenceService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class RiskEngine {
 
     private final List<RiskRule> rules;
+    private final RiskDecisionPersistenceService service;
 
     public RiskDecision evaluate(RiskContext riskContext) {
 
@@ -22,13 +24,17 @@ public class RiskEngine {
         for (RiskRule rule : rules) {
             RiskDecision decision = rule.evaluate(riskContext);
             if (decision.status() == RiskDecisionStatus.REJECTED) {
+                service.save(riskContext, decision);
                 return decision;
             }
         }
 
-        return RiskDecision.builder()
-                .status(RiskDecisionStatus.APPROVED)
-                .reason("Trade approved")
-                .build();
+        RiskDecision decision =
+                RiskDecision.builder()
+                        .status(RiskDecisionStatus.APPROVED)
+                        .reason("Trade approved")
+                        .build();
+        service.save(riskContext, decision);
+        return decision;
     }
 }
