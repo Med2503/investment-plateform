@@ -132,15 +132,20 @@ risk:
     - TEST
     - FAKE
 
-  market:
+market:
 
     open: "11:50"
     close: "19:35"
 
-  volatility:
+volatility:
 
     low-limit: 20
 
     medium-limit: 50
+
+
+outbox:
+
+    max-retries: 5
 
 

@@ -40,6 +40,12 @@ public class OutboxEvent {
     private OutboxStatus status;
 
     @Column(nullable = false)
+    private Integer retryCount;
+
+    @Column(columnDefinition = "TEXT")
+    private String lastError;
+
+    @Column(nullable = false)
     private Instant createdAt;
 
     private Instant publishedAt;
@@ -51,6 +57,9 @@ public class OutboxEvent {
 
         if (status == null) {
             status = OutboxStatus.PENDING;
+        }
+        if (retryCount == null) {
+            retryCount = 0;
         }
     }
 

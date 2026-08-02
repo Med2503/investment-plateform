@@ -29,12 +29,10 @@ public class OutboxScheduler {
         List<OutboxEvent> events = repository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
         for (OutboxEvent event : events) {
             try {
-                boolean published = publisher.publish(event);
-                if (published) {
-                    service.markAsPublished(event);
-                }
+                publisher.publish(event);
+                service.markAsPublished(event);
             } catch (Exception e) {
-                log.error("Unable publishing event {} ", event.getId(), e);
+                service.markAsFailed(event, e);
             }
         }
     }
