@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/RiskServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/RiskServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/messaging/OutboxPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/messaging/OutboxPublisher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/scheduler/OutboxScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/scheduler/OutboxScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/service/OutboxService.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/service/OutboxService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

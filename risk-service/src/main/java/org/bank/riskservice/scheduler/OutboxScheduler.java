@@ -7,6 +7,7 @@ import org.bank.riskservice.entity.OutboxEvent;
 import org.bank.riskservice.messaging.OutboxPublisher;
 import org.bank.riskservice.model.OutboxStatus;
 import org.bank.riskservice.repository.OutboxEventRepository;
+import org.bank.riskservice.service.OutboxService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ public class OutboxScheduler {
 
     private final OutboxEventRepository repository;
     private final OutboxPublisher publisher;
+    private final OutboxService service;
 
     @Scheduled(
             fixedDelay = 5000
@@ -27,7 +29,10 @@ public class OutboxScheduler {
         List<OutboxEvent> events = repository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
         for (OutboxEvent event : events) {
             try {
-                publisher.publish(event);
+                boolean published = publisher.publish(event);
+                if (published) {
+                    service.markAsPublished(event);
+                }
             } catch (Exception e) {
                 log.error("Unable publishing event {} ", event.getId(), e);
             }

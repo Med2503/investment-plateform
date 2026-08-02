@@ -18,7 +18,7 @@ public class OutboxPublisher {
     private final KafkaTemplate<String, RiskDecisionCreatedEvent> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public void publish(OutboxEvent event) {
+    public boolean publish(OutboxEvent event) {
 
         try {
             RiskDecisionCreatedEvent payload =
@@ -30,8 +30,11 @@ public class OutboxPublisher {
             );
 
             log.info("Outbox event {} published ", event.getId());
+            return true;
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to publsih event to kafka", e);
+            log.error("Unable to publish event {} ", event.getId(), e);
+
         }
+        return false;
     }
 }
