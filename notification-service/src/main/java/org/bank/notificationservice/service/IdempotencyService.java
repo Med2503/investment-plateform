@@ -4,6 +4,7 @@ package org.bank.notificationservice.service;
 import lombok.RequiredArgsConstructor;
 import org.bank.notificationservice.entity.ProcessedEvent;
 import org.bank.notificationservice.repository.ProcessedEventRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,36 @@ public class IdempotencyService {
                         .eventType(eventType)
                         .build()
         );
+
+    }
+
+    // je l'ai utilisé pour RiskDecisionConsumer => verifier l'unicité puis save() dans un seul bloc .
+    @Transactional
+    public boolean tryProcess(
+            String eventId,
+            String eventType
+    ) {
+
+        try {
+
+            repository.save(
+
+                    ProcessedEvent.builder()
+
+                            .eventId(eventId)
+
+                            .eventType(eventType)
+
+                            .build()
+
+            );
+            return true;
+
+        } catch (DataIntegrityViolationException e) {
+
+            return false;
+
+        }
 
     }
 
