@@ -5,9 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="94573541-437c-4989-bdda-b22ecf478bc3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/command/NotificationCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/command/NotificationCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/consumer/RiskDecisionsConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/consumer/RiskDecisionsConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/IdempotencyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/IdempotencyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/entity/Notification.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/entity/Notification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/factory/NotificationFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/factory/NotificationFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/org/bank/notificationservice/service/NotificationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/entity/OutboxEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/entity/OutboxEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/entity/RiskDecisionEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/entity/RiskDecisionEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/mapper/OutboxEventMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/mapper/OutboxEventMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/service/RiskDecisionPersistenceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/risk-service/src/main/java/org/bank/riskservice/service/RiskDecisionPersistenceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/risk/RiskDecisionCreatedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-events/src/main/java/org/bank/sharedevents/event/risk/RiskDecisionCreatedEvent.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

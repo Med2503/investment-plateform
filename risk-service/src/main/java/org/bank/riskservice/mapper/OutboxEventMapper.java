@@ -21,6 +21,7 @@ public class OutboxEventMapper {
     public OutboxEvent toOutboxEvent(RiskDecisionEntity entity) {
         RiskDecisionCreatedEvent event = new RiskDecisionCreatedEvent(
                 entity.getId(),
+                entity.getCorrelationId(),
                 entity.getUserId(),
                 entity.getSymbol(),
                 entity.getAmount(),

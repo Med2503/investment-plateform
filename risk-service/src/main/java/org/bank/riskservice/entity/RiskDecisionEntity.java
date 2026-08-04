@@ -28,6 +28,9 @@ public class RiskDecisionEntity {
     private String symbol;
     private BigDecimal amount;
 
+    @Column(nullable = false)
+    private UUID correlationId;
+
     @Enumerated(EnumType.STRING)
     private DecisionStatus status;
 

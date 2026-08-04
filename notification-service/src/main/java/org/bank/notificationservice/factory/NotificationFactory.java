@@ -15,6 +15,7 @@ public class NotificationFactory {
                 .channel(command.channel())
                 .subject(command.subject())
                 .message(command.message())
+                .correlationId(command.correlationId())
                 .build();
     }
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 public record RiskDecisionCreatedEvent(
 
         UUID decisionId,
+        UUID correlationId,
 
         String userId,
 

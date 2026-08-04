@@ -31,6 +31,9 @@ public class OutboxEvent {
     @Column(nullable = false)
     private String eventType;
 
+    @Column(nullable = false)
+    private UUID correlationId;
+
     @Lob
     @Column(nullable = false)
     private String payload;

@@ -10,6 +10,8 @@ import org.bank.riskservice.repository.RiskDecisionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class RiskDecisionPersistenceService {
@@ -20,8 +22,11 @@ public class RiskDecisionPersistenceService {
 
     @Transactional
     public void save(RiskContext context, RiskDecision decision) {
+        UUID correlationId = UUID.randomUUID();
+
         RiskDecisionEntity riskDecision =
                 RiskDecisionEntity.builder()
+                        .correlationId(correlationId)
                         .userId(context.userId())
                         .symbol(context.symbol())
                         .amount(context.totalAmount())

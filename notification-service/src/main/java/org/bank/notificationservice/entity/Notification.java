@@ -33,10 +33,14 @@ public class Notification {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
 
+    @Column(nullable = false)
+    private UUID correlationId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private NotificationStatus status = NotificationStatus.PENDING;
+
 
 
     @Builder.Default

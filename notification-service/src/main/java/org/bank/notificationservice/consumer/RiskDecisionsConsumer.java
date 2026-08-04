@@ -68,7 +68,12 @@ public class RiskDecisionsConsumer {
                 event.userId(),
                 NotificationChannel.EMAIL,
                 "Trade risk decision",
-                "Risk decision generated"
+                "Risk decision generated",
+                event.correlationId()
+        );
+        log.info(
+                "RiskDecision event received correlationId={}",
+                event.correlationId()
         );
         service.send(
                 event,
