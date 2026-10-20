@@ -40,3 +40,9 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+fraud:
+  rules:
+    high-amount-threshold: ${FRAUD_HIGH_AMOUNT_THRESHOLD:100000}
+  thresholds:
+    review: 40
+    reject: 80
