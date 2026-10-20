@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: fraud-service
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fraud_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: fraud-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: org.bank.sharedevents.event.trade
+        spring.json.value.default.type: org.bank.sharedevents.event.trade.TradeExecutedEvent
+        spring.json.use.type.headers: false
+
+server:
+  port: ${SERVER_PORT:8087}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
