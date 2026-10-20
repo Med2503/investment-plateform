@@ -78,11 +78,7 @@
             <version>0.12.7</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- Health checks, metrics and observability -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+
 
         <!-- Micrometer Tracing with OpenTelemetry -->
         <dependency>
