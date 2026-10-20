@@ -30,13 +30,24 @@ public class RiskDecisionPersistenceService {
                         .userId(context.userId())
                         .symbol(context.symbol())
                         .amount(context.totalAmount())
-                        .status(decision.approved() ? DecisionStatus.APPROVED : DecisionStatus.REJECTED)
-                        .rejectionReason(decision.rejectionReason() != null ? decision.rejectionReason().name() : null)
-                        .rejectionReason(decision.reason())
+                        .status(
+                                decision.approved()
+                                        ? DecisionStatus.APPROVED
+                                        : DecisionStatus.REJECTED
+                        )
+                        .rejectionReason(
+                                decision.rejectionReason() != null
+                                        ? decision.rejectionReason().name()
+                                        : null
+                        )
+                        .rejectionMessage(decision.reason())
                         .build();
-        RiskDecisionEntity saveEntity = decisionRepository.save(riskDecision);
-        outboxService.save(
-                outboxEventMapper.toOutboxEvent(saveEntity));
 
+        RiskDecisionEntity savedEntity =
+                decisionRepository.save(riskDecision);
+
+        outboxService.save(
+                outboxEventMapper.toOutboxEvent(savedEntity)
+        );
     }
 }

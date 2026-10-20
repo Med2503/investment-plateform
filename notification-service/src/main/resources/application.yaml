@@ -37,6 +37,10 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+    template:
+      observation-enabled: true
+    listener:
+      observation-enabled: true
     consumer:
       group-id: notification-service
       auto-offset-reset: earliest
@@ -50,6 +54,13 @@ spring:
         spring.json.trusted.packages: org.bank.sharedevents.event
 
 management:
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
+
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318/v1/traces}
 
   endpoints:
     web:
@@ -62,7 +73,7 @@ management:
   endpoint:
 
     health:
-      show-details: always
+      show-details: when_authorized
 
   metrics:
 
@@ -74,3 +85,7 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:application},%X{traceId:-},%X{spanId:-}] "

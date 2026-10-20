@@ -80,6 +80,10 @@ public class RiskDecisionsConsumer {
                 command
         );
 
-        log.info("Risk decision notification proceed: {}", event.decisionId());
+        log.info(
+                "Risk decision notification processed decisionId={} correlationId={}",
+                event.decisionId(),
+                event.correlationId()
+        );
     }
 }

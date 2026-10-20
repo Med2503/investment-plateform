@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.bank.riskservice.entity.OutboxEvent;
 import org.bank.riskservice.entity.RiskDecisionEntity;
 import org.bank.riskservice.model.OutboxStatus;
+import org.bank.riskservice.observability.TraceContextProvider;
 import org.bank.sharedevents.event.RiskDecisionStatus;
 import org.bank.sharedevents.event.RiskRejectionReason;
 import org.bank.sharedevents.event.risk.RiskDecisionCreatedEvent;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class OutboxEventMapper {
 
     private final ObjectMapper objectMapper;
+    private final TraceContextProvider traceContextProvider;
 
     public OutboxEvent toOutboxEvent(RiskDecisionEntity entity) {
         RiskDecisionCreatedEvent event = new RiskDecisionCreatedEvent(
@@ -40,6 +42,7 @@ public class OutboxEventMapper {
                     .eventType(RiskDecisionCreatedEvent.class.getSimpleName())
                     .payload(objectMapper.writeValueAsString(event))
                     .status(OutboxStatus.PENDING)
+                    .traceparent(traceContextProvider.currentTraceparent())
                     .build();
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("error of event serialization", e);

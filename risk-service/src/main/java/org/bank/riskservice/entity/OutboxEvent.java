@@ -53,6 +53,9 @@ public class OutboxEvent {
 
     private Instant publishedAt;
 
+    @Column(name = "traceparent", length = 255)
+    private String traceparent;
+
 
     @PrePersist
     void prePersist() {
