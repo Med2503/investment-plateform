@@ -45,6 +45,9 @@ fraud:
     high-amount-threshold: ${FRAUD_HIGH_AMOUNT_THRESHOLD:100000}
     frequency-window-minutes: 5
     max-trades-in-window: 10
+    suspicious-symbols:
+      - XYZ
+      - ABC
   thresholds:
     review: 40
     reject: 80
