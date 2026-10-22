@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+
 import java.util.Optional;
 
 
@@ -31,5 +32,22 @@ public interface FraudAlertRepository
             @Param("userId") String userId,
             @Param("since") Instant since
     );
+
     Page<FraudAlertEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<FraudAlertEntity> findByUserIdAndFraudStatusOrderByCreatedAtDesc(
+            String userId,
+            String fraudStatus,
+            Pageable pageable
+    );
+
+    Page<FraudAlertEntity> findByUserIdOrderByCreatedAtDesc(
+            String userId,
+            Pageable pageable
+    );
+
+    Page<FraudAlertEntity> findByFraudStatusOrderByCreatedAtDesc(
+            String fraudStatus,
+            Pageable pageable
+    );
 }

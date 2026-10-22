@@ -38,4 +38,34 @@ public class FraudAlertQueryService {
                 .findAllByOrderByCreatedAtDesc(pageable)
                 .map(responseMapper::toResponse);
     }
+
+
+    public Page<FraudAlertResponse> search(
+            String userId,
+            org.bank.fraudservice.model.FraudStatus status,
+            Pageable pageable
+    ) {
+        Page<FraudAlertEntity> alerts;
+
+        if (userId != null && !userId.isBlank() && status != null) {
+            alerts = fraudAlertRepository
+                    .findByUserIdAndFraudStatusOrderByCreatedAtDesc(
+                            userId.trim(),
+                            status.name(),
+                            pageable
+                    );
+        } else if (userId != null && !userId.isBlank()) {
+            alerts = fraudAlertRepository
+                    .findByUserIdOrderByCreatedAtDesc(userId.trim(), pageable);
+        } else if (status != null) {
+            alerts = fraudAlertRepository
+                    .findByFraudStatusOrderByCreatedAtDesc(status.name(), pageable);
+        } else {
+            alerts = fraudAlertRepository
+                    .findAllByOrderByCreatedAtDesc(pageable);
+        }
+
+        return alerts.map(responseMapper::toResponse);
+    }
+
 }

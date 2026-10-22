@@ -24,8 +24,11 @@ public class FraudAlertController {
         return queryService.findByTradeId(tradeId);
     }
 
+
     @GetMapping
     public Page<FraudAlertResponse> findAll(
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) org.bank.fraudservice.model.FraudStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
@@ -38,6 +41,7 @@ public class FraudAlertController {
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
 
-        return queryService.findAll(pageable);
+        return queryService.search(userId, status, pageable);
     }
+
 }
