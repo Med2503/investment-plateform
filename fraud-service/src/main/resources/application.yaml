@@ -48,11 +48,11 @@ management:
 fraud:
   rules:
     high-amount-threshold: ${FRAUD_HIGH_AMOUNT_THRESHOLD:100000}
-    frequency-window-minutes: 5
-    max-trades-in-window: 10
+    frequency-window-minutes: ${FRAUD_FREQUENCY_WINDOW_MINUTES:5}
+    max-trades-in-window: ${FRAUD_MAX_TRADES_IN_WINDOW:10}
     suspicious-symbols:
       - XYZ
       - ABC
   thresholds:
-    review: 40
-    reject: 80
+    review: ${FRAUD_REVIEW_THRESHOLD:40}
+    reject: ${FRAUD_REJECT_THRESHOLD:80}

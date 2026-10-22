@@ -1,29 +1,19 @@
-
 package org.bank.fraudservice.rules;
 
+import lombok.RequiredArgsConstructor;
+import org.bank.fraudservice.config.FraudProperties;
 import org.bank.fraudservice.model.FraudContext;
 import org.bank.fraudservice.model.FraudReason;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
-import java.util.Set;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class SuspiciousAssetRule implements FraudRule {
 
-    private final Set<String> suspiciousSymbols;
-
-    public SuspiciousAssetRule(
-            @Value("${fraud.rules.suspicious-symbols:}") Set<String> suspiciousSymbols
-    ) {
-        this.suspiciousSymbols = suspiciousSymbols.stream()
-                .map(symbol -> symbol.trim().toUpperCase(Locale.ROOT))
-                .filter(symbol -> !symbol.isBlank())
-                .collect(Collectors.toUnmodifiableSet());
-    }
+    private final FraudProperties properties;
 
     @Override
     public Optional<FraudReason> evaluate(FraudContext context) {
@@ -33,11 +23,13 @@ public class SuspiciousAssetRule implements FraudRule {
             return Optional.empty();
         }
 
-        if (suspiciousSymbols.contains(symbol.trim().toUpperCase(Locale.ROOT))) {
-            return Optional.of(FraudReason.SUSPICIOUS_ASSET);
-        }
+        boolean suspicious = properties.rules()
+                .suspiciousSymbols()
+                .contains(symbol.trim().toUpperCase(Locale.ROOT));
 
-        return Optional.empty();
+        return suspicious
+                ? Optional.of(FraudReason.SUSPICIOUS_ASSET)
+                : Optional.empty();
     }
 
     @Override

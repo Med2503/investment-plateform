@@ -9,10 +9,10 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/3.5.16/spring-boot-configuration-processor-3.5.16.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/3.5.16/spring-boot-configuration-processor-3.5.16.jar" />
         </processorPath>
         <module name="fraud-service" />
+        <module name="account-service" />
+        <module name="notification-service" />
       </profile>
       <profile name="Annotation profile for risk-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -55,17 +55,6 @@
         <module name="trading-service" />
         <module name="portfolio-service" />
         <module name="transfer-service" />
-      </profile>
-      <profile name="Annotation profile for notification-service" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/3.5.16/spring-boot-configuration-processor-3.5.16.jar" />
-        </processorPath>
-        <module name="account-service" />
-        <module name="notification-service" />
       </profile>
     </annotationProcessing>
   </component>
