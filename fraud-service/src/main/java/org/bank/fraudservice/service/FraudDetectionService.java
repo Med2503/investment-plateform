@@ -9,6 +9,7 @@ import org.bank.fraudservice.repository.FraudAlertRepository;
 import org.bank.sharedevents.event.trade.TradeExecutedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.bank.fraudservice.metrics.FraudMetrics;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -20,37 +21,53 @@ public class FraudDetectionService {
     private final FraudDetectionEngine detectionEngine;
     private final FraudAlertMapper alertMapper;
     private final FraudAlertRepository alertRepository;
+    private final FraudMetrics fraudMetrics;
+
 
     @Transactional
     public FraudAnalysisResult analyze(TradeExecutedEvent trade) {
-        validate(trade);
+        try {
+            validate(trade);
 
-        var existing = alertRepository.findByTradeId(trade.tradeId());
+            var existing = alertRepository.findByTradeId(trade.tradeId());
 
-        if (existing.isPresent()) {
-            FraudAlertEntity alert = existing.get();
+            if (existing.isPresent()) {
+                FraudAlertEntity alert = existing.get();
 
-            return new FraudAnalysisResult(
-                    org.bank.fraudservice.model.FraudStatus.valueOf(
-                            alert.getFraudStatus()
-                    ),
-                    alert.getTransactionAmount(),
-                    alert.getRiskScore(),
-                    parseReasons(alert.getReasons())
-            );
+                fraudMetrics.recordDuplicateEvent();
+
+                return new FraudAnalysisResult(
+                        org.bank.fraudservice.model.FraudStatus.valueOf(
+                                alert.getFraudStatus()
+                        ),
+                        alert.getTransactionAmount(),
+                        alert.getRiskScore(),
+                        parseReasons(alert.getReasons())
+                );
+            }
+
+            BigDecimal amount = trade.quantity()
+                    .multiply(trade.executedPrice());
+
+            FraudContext context = new FraudContext(trade, amount);
+
+            FraudAnalysisResult result = detectionEngine.analyze(context);
+
+            alertRepository.save(alertMapper.toEntity(context, result));
+
+            fraudMetrics.recordAnalysis(result.status());
+
+            return result;
+
+        } catch (RuntimeException exception) {
+            fraudMetrics.recordError();
+            throw exception;
         }
-
-        BigDecimal amount = trade.quantity()
-                .multiply(trade.executedPrice());
-
-        FraudContext context = new FraudContext(trade, amount);
-
-        FraudAnalysisResult result = detectionEngine.analyze(context);
-
-        alertRepository.save(alertMapper.toEntity(context, result));
-
-        return result;
     }
+
+
+
+
 
     private void validate(TradeExecutedEvent trade) {
         Objects.requireNonNull(trade, "trade must not be null");
