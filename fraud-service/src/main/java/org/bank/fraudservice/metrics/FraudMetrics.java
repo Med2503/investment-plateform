@@ -29,4 +29,7 @@ public class FraudMetrics {
     public void recordDuplicateEvent() {
         meterRegistry.counter("fraud.analysis.duplicate.events").increment();
     }
+    public void recordDltEvent() {
+        meterRegistry.counter("fraud.dlt.events").increment();
+    }
 }
