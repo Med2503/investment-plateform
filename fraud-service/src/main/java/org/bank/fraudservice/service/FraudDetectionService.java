@@ -22,12 +22,13 @@ public class FraudDetectionService {
     private final FraudAlertMapper alertMapper;
     private final FraudAlertRepository alertRepository;
     private final FraudMetrics fraudMetrics;
+    private final TradeEventValidator tradeEventValidator;
 
 
     @Transactional
     public FraudAnalysisResult analyze(TradeExecutedEvent trade) {
         try {
-            validate(trade);
+            tradeEventValidator.validate(trade);
 
             var existing = alertRepository.findByTradeId(trade.tradeId());
 
@@ -69,7 +70,7 @@ public class FraudDetectionService {
 
 
 
-    private void validate(TradeExecutedEvent trade) {
+    /*private void validate(TradeExecutedEvent trade) {
         Objects.requireNonNull(trade, "trade must not be null");
         Objects.requireNonNull(trade.tradeId(), "tradeId must not be null");
         Objects.requireNonNull(trade.userId(), "userId must not be null");
@@ -86,6 +87,8 @@ public class FraudDetectionService {
             );
         }
     }
+
+     */
 
     private java.util.List<org.bank.fraudservice.model.FraudReason>
     parseReasons(String reasons) {
