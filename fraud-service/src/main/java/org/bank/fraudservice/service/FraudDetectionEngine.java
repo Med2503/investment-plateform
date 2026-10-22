@@ -29,7 +29,16 @@ public class FraudDetectionEngine {
 
             if (result.isPresent()) {
                 reasons.add(result.get());
-                score += rule.score();
+                int ruleScore = rule.score();
+
+                if (ruleScore < 0) {
+                    throw new IllegalStateException(
+                            "Fraud rule score must not be negative: " +
+                                    rule.getClass().getSimpleName()
+                    );
+                }
+
+                score = Math.min(100, score + ruleScore);
             }
         }
 
