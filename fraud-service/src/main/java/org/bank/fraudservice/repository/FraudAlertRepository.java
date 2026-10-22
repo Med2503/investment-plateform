@@ -3,8 +3,14 @@ package org.bank.fraudservice.repository;
 import org.bank.fraudservice.entity.FraudAlertEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.time.Instant;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
+
 
 public interface FraudAlertRepository
         extends JpaRepository<FraudAlertEntity, UUID> {
@@ -12,4 +18,15 @@ public interface FraudAlertRepository
     Optional<FraudAlertEntity> findByTradeId(UUID tradeId);
 
     boolean existsByTradeId(UUID tradeId);
+
+    @Query("""
+                SELECT COUNT(f)
+                FROM FraudAlertEntity f
+                WHERE f.userId = :userId
+                  AND f.createdAt >= :since
+            """)
+    long countRecentAlertsByUserId(
+            @Param("userId") String userId,
+            @Param("since") Instant since
+    );
 }

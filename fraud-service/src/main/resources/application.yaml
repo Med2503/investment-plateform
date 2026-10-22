@@ -43,6 +43,8 @@ management:
 fraud:
   rules:
     high-amount-threshold: ${FRAUD_HIGH_AMOUNT_THRESHOLD:100000}
+    frequency-window-minutes: 5
+    max-trades-in-window: 10
   thresholds:
     review: 40
     reject: 80
