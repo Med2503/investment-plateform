@@ -73,3 +73,4 @@ reporting:
   processing:
     fixed-delay-ms: ${REPORT_PROCESSING_FIXED_DELAY_MS:5000}
     lease-duration-seconds: ${REPORT_PROCESSING_LEASE_DURATION_SECONDS:300}
+    heartbeat-interval-seconds: ${REPORT_PROCESSING_HEARTBEAT_INTERVAL_SECONDS:60}
