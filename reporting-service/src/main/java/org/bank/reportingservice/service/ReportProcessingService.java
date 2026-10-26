@@ -94,6 +94,17 @@ public class ReportProcessingService {
                     return;
                 }
 
+                if (!leaseService.renew(reportId, token)
+                        || heartbeat.leaseLost().get()) {
+                    log.warn(
+                            "Lease lost before finalization of report {}",
+                            reportId
+                    );
+                    cleanupUploadedObject(uploadedObjectKey, reportId);
+                    uploadedObjectKey = null;
+                    return;
+                }
+
                 finalizationAttempted = true;
 
                 boolean finalized = finalizationService.complete(
@@ -140,8 +151,7 @@ public class ReportProcessingService {
             if (finalizationAttempted) {
                 log.error(
                         "Report {} finalization outcome is uncertain. "
-                                + "Preserving the uploaded artifact to avoid "
-                                + "deleting a potentially finalized report.",
+                                + "Preserving the uploaded artifact.",
                         reportId
                 );
                 return;
@@ -196,7 +206,7 @@ public class ReportProcessingService {
 
         if (!cleanupHandled) {
             log.error(
-                    "Report artifact cleanup is unresolved: reportId={}",
+                    "Report artifact cleanup remains unresolved: reportId={}",
                     reportId
             );
         }
