@@ -1,8 +1,8 @@
-
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bank.reportingservice.exception.ReportStorageException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class ReportStorageCleanupService {
     private final ReportStorageCleanupTaskService cleanupTaskService;
 
     /**
-     * Attempts immediate deletion and schedules a retry if deletion fails.
+     * Attempts immediate deletion and schedules a retry if storage deletion
+     * fails.
      *
-     * @return true if deletion succeeded or no object key was provided,
-     *         or if a retry was successfully scheduled;
-     *         false if cleanup could not be confirmed.
+     * @return true if deletion succeeded, no object key was provided,
+     *         or a retry was successfully scheduled; false otherwise
      */
     public boolean deleteIfPresent(String objectKey, String reportId) {
         if (objectKey == null || objectKey.isBlank()) {
@@ -39,7 +39,8 @@ public class ReportStorageCleanupService {
             );
 
             return true;
-        } catch (Exception storageException) {
+
+        } catch (ReportStorageException storageException) {
             log.error(
                     "Report storage deletion failed: reportId={}, exceptionType={}",
                     reportId,
@@ -72,6 +73,7 @@ public class ReportStorageCleanupService {
             );
 
             return true;
+
         } catch (DataIntegrityViolationException exception) {
             log.error(
                     "Could not confirm cleanup task persistence: "
@@ -80,6 +82,7 @@ public class ReportStorageCleanupService {
             );
 
             return false;
+
         } catch (Exception exception) {
             log.error(
                     "Report storage cleanup retry scheduling failed: "
