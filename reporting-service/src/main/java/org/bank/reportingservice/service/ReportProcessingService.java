@@ -1,17 +1,14 @@
+
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bank.reportingservice.entity.ReportEntity;
-import org.bank.reportingservice.exception.ReportNotFoundException;
 import org.bank.reportingservice.model.ReportFormat;
 import org.bank.reportingservice.model.ReportStatus;
 import org.bank.reportingservice.repository.ReportRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -26,9 +23,8 @@ public class ReportProcessingService {
     private final PdfReportGenerator pdfReportGenerator;
     private final ReportFinalizationService finalizationService;
     private final ReportLeaseService leaseService;
-    private final Clock clock;
     private final ReportLeaseHeartbeat leaseHeartbeat;
-
+    private final ReportStorageCleanupService storageCleanupService;
 
     public void processClaimedReport(UUID reportId, UUID token) {
         ReportEntity report = reportRepository.findById(reportId)
@@ -51,16 +47,20 @@ public class ReportProcessingService {
                      leaseHeartbeat.start(reportId, token)) {
 
             if (!leaseService.renew(reportId, token)) {
-                log.warn("Could not renew lease for report {}", reportId);
+                log.warn(
+                        "Could not renew lease before generating report {}",
+                        reportId
+                );
                 return;
             }
 
-            ReportFileGenerator generator = selectGenerator(report.getFormat());
+            ReportFileGenerator generator =
+                    selectGenerator(report.getFormat());
 
             try (GeneratedReport generated = generator.generate(report)) {
                 if (heartbeat.leaseLost().get()) {
                     log.warn(
-                            "Lease was lost during generation of report {}",
+                            "Lease lost during generation of report {}",
                             reportId
                     );
                     return;
@@ -87,7 +87,10 @@ public class ReportProcessingService {
                 );
 
                 if (heartbeat.leaseLost().get()) {
-                    reportStorage.delete(uploadedObjectKey);
+                    storageCleanupService.deleteIfPresent(
+                            uploadedObjectKey,
+                            reportId.toString()
+                    );
                     uploadedObjectKey = null;
                     return;
                 }
@@ -103,30 +106,52 @@ public class ReportProcessingService {
                             "Report {} could not be finalized by this worker",
                             reportId
                     );
-                    reportStorage.delete(uploadedObjectKey);
+
+                    storageCleanupService.deleteIfPresent(
+                            uploadedObjectKey,
+                            reportId.toString()
+                    );
+
                     uploadedObjectKey = null;
                     return;
                 }
 
-                log.info("Report {} completed successfully", reportId);
+                log.info(
+                        "Report {} completed successfully",
+                        reportId
+                );
             }
         } catch (Exception exception) {
-            log.error("Failed to process report {}", reportId, exception);
-
-            boolean markedFailed = finalizationService.fail(
+            log.error(
+                    "Failed to process report {}",
                     reportId,
-                    token,
-                    "Report generation or storage failed"
+                    exception
             );
 
-            if (!markedFailed && uploadedObjectKey != null) {
-                try {
-                    reportStorage.delete(uploadedObjectKey);
-                } catch (Exception cleanupException) {
-                    log.error(
-                            "Could not clean up S3 object for report {}",
-                            reportId,
-                            cleanupException
+            try {
+                boolean markedFailed = finalizationService.fail(
+                        reportId,
+                        token,
+                        "Report generation or storage failed"
+                );
+
+                if (!markedFailed && uploadedObjectKey != null) {
+                    storageCleanupService.deleteIfPresent(
+                            uploadedObjectKey,
+                            reportId.toString()
+                    );
+                }
+            } catch (Exception finalizationException) {
+                log.error(
+                        "Could not finalize failure for report {}",
+                        reportId,
+                        finalizationException
+                );
+
+                if (uploadedObjectKey != null) {
+                    storageCleanupService.deleteIfPresent(
+                            uploadedObjectKey,
+                            reportId.toString()
                     );
                 }
             }
@@ -142,7 +167,11 @@ public class ReportProcessingService {
     }
 
     private String createObjectKey(UUID reportId, String extension) {
-        return "reports/" + reportId + "/" + UUID.randomUUID()
-                + "." + extension;
+        return "reports/"
+                + reportId
+                + "/"
+                + UUID.randomUUID()
+                + "."
+                + extension;
     }
 }
