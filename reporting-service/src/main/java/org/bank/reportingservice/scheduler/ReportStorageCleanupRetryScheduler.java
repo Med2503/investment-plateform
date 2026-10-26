@@ -1,4 +1,3 @@
-
 package org.bank.reportingservice.scheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -6,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bank.reportingservice.config.ReportStorageCleanupProperties;
 import org.bank.reportingservice.entity.CleanupTaskStatus;
 import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
-
 import org.bank.reportingservice.service.ReportStorageCleanupRetryService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,16 +30,27 @@ public class ReportStorageCleanupRetryScheduler {
                     "${reporting.storage.cleanup.fixed-delay-ms:30000}"
     )
     public void retryFailedCleanups() {
-        Instant now = Instant.now(clock);
+        List<UUID> taskIds;
 
-        List<UUID> taskIds = taskRepository.findEligibleTaskIds(
-                CleanupTaskStatus.PENDING,
-                CleanupTaskStatus.PROCESSING,
-                now,
-                PageRequest.of(0, properties.batchSize())
-        );
+        try {
+            Instant now = Instant.now(clock);
+
+            taskIds = taskRepository.findEligibleTaskIds(
+                    CleanupTaskStatus.PENDING,
+                    CleanupTaskStatus.PROCESSING,
+                    now,
+                    PageRequest.of(0, properties.batchSize())
+            );
+        } catch (Exception exception) {
+            log.error(
+                    "Could not retrieve eligible storage cleanup tasks",
+                    exception
+            );
+            return;
+        }
 
         if (taskIds.isEmpty()) {
+            log.debug("No eligible storage cleanup tasks found");
             return;
         }
 
@@ -50,10 +59,16 @@ public class ReportStorageCleanupRetryScheduler {
                 taskIds.size()
         );
 
+        int processed = 0;
+        int unexpectedErrors = 0;
+
         for (UUID taskId : taskIds) {
             try {
                 retryService.processTask(taskId);
+                processed++;
             } catch (Exception exception) {
+                unexpectedErrors++;
+
                 log.error(
                         "Unexpected error processing cleanup task: taskId={}",
                         taskId,
@@ -61,5 +76,13 @@ public class ReportStorageCleanupRetryScheduler {
                 );
             }
         }
+
+        log.info(
+                "Storage cleanup batch finished: selected={}, "
+                        + "processed={}, unexpectedErrors={}",
+                taskIds.size(),
+                processed,
+                unexpectedErrors
+        );
     }
 }
