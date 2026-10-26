@@ -77,6 +77,20 @@ public class ReportEntity {
     @Version
     private long version;
 
+    public Instant getProcessingLeaseUntil() {
+        return processingLeaseUntil;
+    }
+
+    public UUID getProcessingToken() {
+        return processingToken;
+    }
+
+    @Column(name = "processing_lease_until")
+    private Instant processingLeaseUntil;
+
+    @Column(name = "processing_token")
+    private UUID processingToken;
+
     protected ReportEntity() {
         // Required by JPA.
     }
@@ -157,6 +171,22 @@ public class ReportEntity {
                 : errorMessage;
         this.completedAt = completedAt;
         this.status = ReportStatus.FAILED;
+    }
+
+
+    public void renewProcessingLease(Instant leaseUntil) {
+        if (status != ReportStatus.PROCESSING) {
+            throw new IllegalStateException(
+                    "Only processing reports can renew their lease"
+            );
+        }
+
+        this.processingLeaseUntil = leaseUntil;
+    }
+
+    public void clearProcessingLease() {
+        this.processingLeaseUntil = null;
+        this.processingToken = null;
     }
 
     public UUID getId() {

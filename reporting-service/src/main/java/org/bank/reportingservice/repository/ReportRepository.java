@@ -81,4 +81,50 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
             @Param("processingStatus") ReportStatus processingStatus,
             @Param("startedAt") Instant startedAt
     );
+
+    @Modifying
+    @Query("""
+        UPDATE ReportEntity r
+        SET r.status = :processingStatus,
+            r.startedAt = :startedAt,
+            r.updatedAt = :startedAt,
+            r.processingLeaseUntil = :leaseUntil,
+            r.processingToken = :token,
+            r.version = r.version + 1
+        WHERE r.id = :reportId
+          AND (
+              r.status = :pendingStatus
+              OR (
+                  r.status = :processingStatus
+                  AND r.processingLeaseUntil < :startedAt
+              )
+          )
+        """)
+    int claimOrRecoverReport(
+            @Param("reportId") UUID reportId,
+            @Param("pendingStatus") ReportStatus pendingStatus,
+            @Param("processingStatus") ReportStatus processingStatus,
+            @Param("startedAt") Instant startedAt,
+            @Param("leaseUntil") Instant leaseUntil,
+            @Param("token") UUID token
+    );
+
+    @Modifying
+    @Query("""
+        UPDATE ReportEntity r
+        SET r.processingLeaseUntil = :leaseUntil,
+            r.updatedAt = :now,
+            r.version = r.version + 1
+        WHERE r.id = :reportId
+          AND r.status = :processingStatus
+          AND r.processingToken = :token
+          AND r.processingLeaseUntil >= :now
+        """)
+    int renewLease(
+            @Param("reportId") UUID reportId,
+            @Param("processingStatus") ReportStatus processingStatus,
+            @Param("token") UUID token,
+            @Param("now") Instant now,
+            @Param("leaseUntil") Instant leaseUntil
+    );
 }

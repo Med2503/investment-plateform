@@ -72,3 +72,4 @@ reporting:
       bucket: ${REPORTING_S3_BUCKET}
   processing:
     fixed-delay-ms: ${REPORT_PROCESSING_FIXED_DELAY_MS:5000}
+    lease-duration-seconds: ${REPORT_PROCESSING_LEASE_DURATION_SECONDS:300}
