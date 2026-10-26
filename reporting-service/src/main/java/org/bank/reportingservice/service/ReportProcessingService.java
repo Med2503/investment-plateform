@@ -42,13 +42,14 @@ public class ReportProcessingService {
         }
 
         String uploadedObjectKey = null;
+        boolean completedSuccessfully = false;
 
         try (ReportLeaseHeartbeat.Heartbeat heartbeat =
                      leaseHeartbeat.start(reportId, token)) {
 
             if (!leaseService.renew(reportId, token)) {
                 log.warn(
-                        "Could not renew lease before generating report {}",
+                        "Could not renew lease before processing report {}",
                         reportId
                 );
                 return;
@@ -87,34 +88,31 @@ public class ReportProcessingService {
                 );
 
                 if (heartbeat.leaseLost().get()) {
-                    storageCleanupService.deleteIfPresent(
-                            uploadedObjectKey,
-                            reportId.toString()
-                    );
+                    cleanupUploadedObject(uploadedObjectKey, reportId);
                     uploadedObjectKey = null;
                     return;
                 }
 
-                boolean completed = finalizationService.complete(
+                boolean finalized = finalizationService.complete(
                         reportId,
                         token,
                         uploadedObjectKey
                 );
 
-                if (!completed) {
+                if (!finalized) {
                     log.warn(
                             "Report {} could not be finalized by this worker",
                             reportId
                     );
 
-                    storageCleanupService.deleteIfPresent(
-                            uploadedObjectKey,
-                            reportId.toString()
-                    );
-
+                    cleanupUploadedObject(uploadedObjectKey, reportId);
                     uploadedObjectKey = null;
                     return;
                 }
+
+                // Set immediately after successful database finalization.
+                // Never delete this object's key after this point.
+                completedSuccessfully = true;
 
                 log.info(
                         "Report {} completed successfully",
@@ -123,37 +121,36 @@ public class ReportProcessingService {
             }
         } catch (Exception exception) {
             log.error(
-                    "Failed to process report {}",
+                    "Error while processing report {}",
                     reportId,
                     exception
             );
 
+            if (completedSuccessfully) {
+                log.warn(
+                        "Report {} was already finalized successfully. "
+                                + "Its stored artifact will be preserved.",
+                        reportId
+                );
+                return;
+            }
+
             try {
-                boolean markedFailed = finalizationService.fail(
+                finalizationService.fail(
                         reportId,
                         token,
                         "Report generation or storage failed"
                 );
-
-                if (!markedFailed && uploadedObjectKey != null) {
-                    storageCleanupService.deleteIfPresent(
-                            uploadedObjectKey,
-                            reportId.toString()
-                    );
-                }
             } catch (Exception finalizationException) {
                 log.error(
-                        "Could not finalize failure for report {}",
+                        "Could not mark report {} as failed",
                         reportId,
                         finalizationException
                 );
+            }
 
-                if (uploadedObjectKey != null) {
-                    storageCleanupService.deleteIfPresent(
-                            uploadedObjectKey,
-                            reportId.toString()
-                    );
-                }
+            if (uploadedObjectKey != null) {
+                cleanupUploadedObject(uploadedObjectKey, reportId);
             }
         }
     }
@@ -173,5 +170,12 @@ public class ReportProcessingService {
                 + UUID.randomUUID()
                 + "."
                 + extension;
+    }
+
+    private void cleanupUploadedObject(String objectKey, UUID reportId) {
+        storageCleanupService.deleteIfPresent(
+                objectKey,
+                reportId.toString()
+        );
     }
 }
