@@ -21,6 +21,51 @@ public interface ReportStorageCleanupTaskRepository
 
     boolean existsByObjectKey(String objectKey);
 
+    @Modifying
+    @Query(value = """
+            INSERT INTO report_storage_cleanup_tasks (
+                id,
+                report_id,
+                object_key,
+                status,
+                attempts,
+                next_attempt_at,
+                last_error,
+                processing_token,
+                processing_lease_until,
+                created_at,
+                updated_at,
+                version
+            )
+            VALUES (
+                :id,
+                :reportId,
+                :objectKey,
+                :status,
+                :attempts,
+                :nextAttemptAt,
+                :lastError,
+                NULL,
+                NULL,
+                :createdAt,
+                :updatedAt,
+                :version
+            )
+            ON CONFLICT (object_key) DO NOTHING
+            """, nativeQuery = true)
+    int insertIfAbsent(
+            @Param("id") UUID id,
+            @Param("reportId") String reportId,
+            @Param("objectKey") String objectKey,
+            @Param("status") String status,
+            @Param("attempts") int attempts,
+            @Param("nextAttemptAt") Instant nextAttemptAt,
+            @Param("lastError") String lastError,
+            @Param("createdAt") Instant createdAt,
+            @Param("updatedAt") Instant updatedAt,
+            @Param("version") long version
+    );
+
     @Query("""
             SELECT t.id
             FROM ReportStorageCleanupTaskEntity t
