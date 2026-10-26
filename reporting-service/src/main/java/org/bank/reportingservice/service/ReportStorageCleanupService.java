@@ -33,9 +33,9 @@ public class ReportStorageCleanupService {
             return true;
         } catch (Exception storageException) {
             log.error(
-                    "Failed to delete report storage object: reportId={}",
+                    "Report storage deletion failed: reportId={}, exceptionType={}",
                     reportId,
-                    storageException
+                    storageException.getClass().getSimpleName()
             );
 
             enqueueForRetry(
@@ -60,15 +60,16 @@ public class ReportStorageCleanupService {
                     errorMessage
             );
         } catch (DataIntegrityViolationException exception) {
-
             log.info(
-                    "Cleanup task already exists for object key"
+                    "Cleanup task already exists or violates a database constraint: "
+                            + "reportId={}",
+                    reportId
             );
         } catch (Exception exception) {
             log.error(
-                    "Unable to persist cleanup task: reportId={}",
+                    "Cleanup task persistence failed: reportId={}, exceptionType={}",
                     reportId,
-                    exception
+                    exception.getClass().getSimpleName()
             );
         }
     }
