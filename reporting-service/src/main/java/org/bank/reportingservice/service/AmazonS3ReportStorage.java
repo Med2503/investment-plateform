@@ -1,8 +1,8 @@
-
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bank.reportingservice.exception.ReportStorageException;
+import org.bank.reportingservice.service.ReportStorage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Service
@@ -68,6 +69,7 @@ public class AmazonS3ReportStorage implements ReportStorage {
             );
 
             return objectKey;
+
         } catch (S3Exception | SdkClientException exception) {
             throw new ReportStorageException(
                     "Unable to store report in object storage",
@@ -91,6 +93,7 @@ public class AmazonS3ReportStorage implements ReportStorage {
                     s3Client.getObject(request);
 
             return response;
+
         } catch (S3Exception | SdkClientException exception) {
             throw new ReportStorageException(
                     "Unable to retrieve report from object storage",
@@ -111,6 +114,7 @@ public class AmazonS3ReportStorage implements ReportStorage {
                     .build();
 
             s3Client.deleteObject(request);
+
         } catch (S3Exception | SdkClientException exception) {
             throw new ReportStorageException(
                     "Unable to delete report from object storage",

@@ -111,6 +111,9 @@ public class ReportStorageCleanupTaskStateService {
         if (!ownsActiveLease(task, token, now)) {
             return false;
         }
+        if (task.getAttempts() < 0 || task.getAttempts() == Integer.MAX_VALUE) {
+            throw new IllegalStateException("Invalid cleanup attempt count");
+        }
 
         int nextAttemptNumber = task.getAttempts() + 1;
         long delaySeconds = calculateDelay(nextAttemptNumber);

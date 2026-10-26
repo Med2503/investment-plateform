@@ -25,15 +25,13 @@ public class ReportStorageCleanupTaskService {
             String reportId,
             String errorMessage
     ) {
-        validateObjectKey(objectKey);
+        Instant now = Instant.now(clock);
 
-        if (taskRepository.existsByObjectKey(objectKey)) {
-            return;
-        }
+        Instant nextAttemptAt = now.plusSeconds(
+                properties.initialDelaySeconds()
+        );
 
-        Instant nextAttemptAt = Instant.now(clock)
-                .plusSeconds(properties.initialDelaySeconds());
-
+        // The entity constructor preserves validation and error sanitization.
         ReportStorageCleanupTaskEntity task =
                 new ReportStorageCleanupTaskEntity(
                         reportId,
@@ -42,14 +40,19 @@ public class ReportStorageCleanupTaskService {
                         errorMessage
                 );
 
-        taskRepository.saveAndFlush(task);
-    }
-
-    private void validateObjectKey(String objectKey) {
-        if (objectKey == null || objectKey.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Object key must not be blank"
-            );
-        }
+        // The native INSERT bypasses JPA callbacks, so timestamps
+        // must be provided explicitly.
+        taskRepository.insertIfAbsent(
+                task.getId(),
+                task.getReportId(),
+                task.getObjectKey(),
+                task.getStatus().name(),
+                task.getAttempts(),
+                task.getNextAttemptAt(),
+                task.getLastError(),
+                now,
+                now,
+                task.getVersion()
+        );
     }
 }

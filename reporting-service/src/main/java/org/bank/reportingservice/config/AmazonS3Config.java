@@ -1,16 +1,19 @@
 package org.bank.reportingservice.config;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.core.retry.RetryPolicy;
+
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.retries.DefaultRetryStrategy;
+import software.amazon.awssdk.retries.api.RetryStrategy;
 import software.amazon.awssdk.services.s3.S3Client;
-
-import java.time.Duration;
 
 @Configuration
 public class AmazonS3Config {
@@ -29,7 +32,8 @@ public class AmazonS3Config {
             @Value("${reporting.storage.s3.max-retries:3}")
             int maxRetries
     ) {
-        validateTimeouts(
+        validateConfiguration(
+                region,
                 connectionTimeoutSeconds,
                 socketTimeoutSeconds,
                 apiCallAttemptTimeoutSeconds,
@@ -40,20 +44,24 @@ public class AmazonS3Config {
         ClientOverrideConfiguration overrideConfiguration =
                 ClientOverrideConfiguration.builder()
                         .apiCallAttemptTimeout(
-                                Duration.ofSeconds(apiCallAttemptTimeoutSeconds)
+                                Duration.ofSeconds(
+                                        apiCallAttemptTimeoutSeconds
+                                )
                         )
                         .apiCallTimeout(
-                                Duration.ofSeconds(apiCallTimeoutSeconds)
+                                Duration.ofSeconds(
+                                        apiCallTimeoutSeconds
+                                )
                         )
-                        .retryPolicy(
-                                RetryPolicy.builder()
-                                        .numRetries(maxRetries)
+                        .retryStrategy(
+                                DefaultRetryStrategy.standardStrategyBuilder()
+                                        .maxAttempts(maxRetries + 1)
                                         .build()
                         )
                         .build();
 
         return S3Client.builder()
-                .region(Region.of(region))
+                .region(Region.of(region.trim()))
                 .credentialsProvider(
                         DefaultCredentialsProvider.create()
                 )
@@ -65,20 +73,29 @@ public class AmazonS3Config {
                                         )
                                 )
                                 .socketTimeout(
-                                        Duration.ofSeconds(socketTimeoutSeconds)
+                                        Duration.ofSeconds(
+                                                socketTimeoutSeconds
+                                        )
                                 )
                 )
                 .overrideConfiguration(overrideConfiguration)
                 .build();
     }
 
-    private void validateTimeouts(
+    private void validateConfiguration(
+            String region,
             long connectionTimeoutSeconds,
             long socketTimeoutSeconds,
             long apiCallAttemptTimeoutSeconds,
             long apiCallTimeoutSeconds,
             int maxRetries
     ) {
+        if (region == null || region.isBlank()) {
+            throw new IllegalArgumentException(
+                    "S3 region must not be blank"
+            );
+        }
+
         if (connectionTimeoutSeconds <= 0
                 || socketTimeoutSeconds <= 0
                 || apiCallAttemptTimeoutSeconds <= 0
@@ -94,9 +111,10 @@ public class AmazonS3Config {
             );
         }
 
-        if (maxRetries < 0) {
+        if (maxRetries < 0 || maxRetries == Integer.MAX_VALUE) {
             throw new IllegalArgumentException(
-                    "S3 max retries must not be negative"
+                    "S3 max retries must be between 0 and "
+                            + (Integer.MAX_VALUE - 1)
             );
         }
     }
