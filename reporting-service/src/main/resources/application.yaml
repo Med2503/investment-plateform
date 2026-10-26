@@ -70,6 +70,9 @@ reporting:
     s3:
       region: ${AWS_REGION:eu-west-1}
       bucket: ${REPORTING_S3_BUCKET}
+      connection-timeout-seconds: ${REPORTING_S3_CONNECTION_TIMEOUT_SECONDS:5}
+      socket-timeout-seconds: ${REPORTING_S3_SOCKET_TIMEOUT_SECONDS:30}
+      api-call-timeout-seconds: ${REPORTING_S3_API_CALL_TIMEOUT_SECONDS:60}
     cleanup:
       fixed-delay-ms: ${REPORTING_CLEANUP_FIXED_DELAY_MS:30000}
       lease-duration-seconds: ${REPORTING_CLEANUP_LEASE_DURATION_SECONDS:300}

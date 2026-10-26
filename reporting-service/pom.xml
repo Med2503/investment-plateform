@@ -141,6 +141,10 @@
 			<artifactId>shared-events</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>apache-client</artifactId>
+		</dependency>
 
 	</dependencies>
 
