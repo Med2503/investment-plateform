@@ -1,3 +1,4 @@
+
 package org.bank.reportingservice.scheduler;
 
 import lombok.RequiredArgsConstructor;
@@ -33,13 +34,23 @@ public class ReportStorageCleanupRetryScheduler {
         List<UUID> taskIds;
 
         try {
+            int batchSize = properties.batchSize();
+
+            if (batchSize <= 0) {
+                log.error(
+                        "Invalid storage cleanup batch size: {}",
+                        batchSize
+                );
+                return;
+            }
+
             Instant now = Instant.now(clock);
 
             taskIds = taskRepository.findEligibleTaskIds(
                     CleanupTaskStatus.PENDING,
                     CleanupTaskStatus.PROCESSING,
                     now,
-                    PageRequest.of(0, properties.batchSize())
+                    PageRequest.of(0, batchSize)
             );
         } catch (Exception exception) {
             log.error(
