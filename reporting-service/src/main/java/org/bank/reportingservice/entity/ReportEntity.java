@@ -1,4 +1,3 @@
-
 package org.bank.reportingservice.entity;
 
 import jakarta.persistence.Column;
@@ -25,11 +24,19 @@ import java.util.UUID;
 @Table(
         name = "reports",
         indexes = {
-                @Index(name = "idx_reports_user_created", columnList = "user_id, created_at"),
-                @Index(name = "idx_reports_status_created", columnList = "status, created_at")
+                @Index(
+                        name = "idx_reports_user_created",
+                        columnList = "user_id, created_at"
+                ),
+                @Index(
+                        name = "idx_reports_status_created",
+                        columnList = "status, created_at"
+                )
         }
 )
 public class ReportEntity {
+
+    private static final int MAX_ERROR_LENGTH = 2000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -59,7 +66,7 @@ public class ReportEntity {
     @Column(name = "file_location", length = 1000)
     private String fileLocation;
 
-    @Column(name = "error_message", length = 2000)
+    @Column(name = "error_message", length = MAX_ERROR_LENGTH)
     private String errorMessage;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -76,14 +83,6 @@ public class ReportEntity {
 
     @Version
     private long version;
-
-    public Instant getProcessingLeaseUntil() {
-        return processingLeaseUntil;
-    }
-
-    public UUID getProcessingToken() {
-        return processingToken;
-    }
 
     @Column(name = "processing_lease_until")
     private Instant processingLeaseUntil;
@@ -113,9 +112,11 @@ public class ReportEntity {
     @PrePersist
     protected void onCreate() {
         Instant now = Instant.now();
+
         if (createdAt == null) {
             createdAt = now;
         }
+
         updatedAt = now;
     }
 
@@ -133,6 +134,8 @@ public class ReportEntity {
 
         this.status = ReportStatus.PROCESSING;
         this.startedAt = startedAt;
+        this.completedAt = null;
+        this.fileLocation = null;
         this.errorMessage = null;
     }
 
@@ -142,6 +145,7 @@ public class ReportEntity {
                     "Only processing reports can be completed"
             );
         }
+
         if (fileLocation == null || fileLocation.isBlank()) {
             throw new IllegalArgumentException(
                     "File location must not be blank"
@@ -152,6 +156,7 @@ public class ReportEntity {
         this.completedAt = completedAt;
         this.status = ReportStatus.COMPLETED;
         this.errorMessage = null;
+        clearProcessingLease();
     }
 
     public void markFailed(String errorMessage, Instant completedAt) {
@@ -160,24 +165,32 @@ public class ReportEntity {
                     "Only processing reports can fail"
             );
         }
+
         if (errorMessage == null || errorMessage.isBlank()) {
             throw new IllegalArgumentException(
                     "Error message must not be blank"
             );
         }
 
-        this.errorMessage = errorMessage.length() > 2000
-                ? errorMessage.substring(0, 2000)
+        this.errorMessage = errorMessage.length() > MAX_ERROR_LENGTH
+                ? errorMessage.substring(0, MAX_ERROR_LENGTH)
                 : errorMessage;
+
         this.completedAt = completedAt;
         this.status = ReportStatus.FAILED;
+        clearProcessingLease();
     }
-
 
     public void renewProcessingLease(Instant leaseUntil) {
         if (status != ReportStatus.PROCESSING) {
             throw new IllegalStateException(
                     "Only processing reports can renew their lease"
+            );
+        }
+
+        if (leaseUntil == null) {
+            throw new IllegalArgumentException(
+                    "Lease expiration must not be null"
             );
         }
 
@@ -243,5 +256,13 @@ public class ReportEntity {
 
     public long getVersion() {
         return version;
+    }
+
+    public Instant getProcessingLeaseUntil() {
+        return processingLeaseUntil;
+    }
+
+    public UUID getProcessingToken() {
+        return processingToken;
     }
 }
