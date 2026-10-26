@@ -3,13 +3,8 @@ package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bank.reportingservice.entity.ReportStorageCleanupTaskEntity;
-import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
 
 @Slf4j
 @Service
@@ -17,9 +12,12 @@ import java.time.Instant;
 public class ReportStorageCleanupService {
 
     private final ReportStorage reportStorage;
-    private final ReportStorageCleanupTaskRepository cleanupTaskRepository;
+    private final ReportStorageCleanupTaskService cleanupTaskService;
 
-    public boolean deleteIfPresent(String objectKey, String reportId) {
+    public boolean deleteIfPresent(
+            String objectKey,
+            String reportId
+    ) {
         if (objectKey == null || objectKey.isBlank()) {
             return true;
         }
@@ -28,67 +26,49 @@ public class ReportStorageCleanupService {
             reportStorage.delete(objectKey);
 
             log.info(
-                    "Storage cleanup succeeded for report {}",
+                    "Report storage object deleted: reportId={}",
                     reportId
             );
 
             return true;
         } catch (Exception storageException) {
             log.error(
-                    "Immediate storage cleanup failed for report {}",
+                    "Failed to delete report storage object: reportId={}",
                     reportId,
                     storageException
             );
 
-            try {
-                enqueueCleanup(
-                        objectKey,
-                        reportId,
-                        storageException.getMessage()
-                );
-            } catch (Exception persistenceException) {
-                log.error(
-                        "Could not persist cleanup task for report {}. "
-                                + "Object key: {}",
-                        reportId,
-                        objectKey,
-                        persistenceException
-                );
-            }
+            enqueueForRetry(
+                    objectKey,
+                    reportId,
+                    storageException.getMessage()
+            );
 
             return false;
         }
     }
 
-    @Transactional
-    public void enqueueCleanup(
+    private void enqueueForRetry(
             String objectKey,
             String reportId,
             String errorMessage
     ) {
-        if (cleanupTaskRepository.existsByObjectKey(objectKey)) {
-            log.info(
-                    "Cleanup task already exists for object key {}",
-                    objectKey
-            );
-            return;
-        }
-
-        ReportStorageCleanupTaskEntity task =
-                new ReportStorageCleanupTaskEntity(
-                        reportId,
-                        objectKey,
-                        Instant.now().plusSeconds(30),
-                        errorMessage
-                );
-
         try {
-            cleanupTaskRepository.save(task);
+            cleanupTaskService.enqueue(
+                    objectKey,
+                    reportId,
+                    errorMessage
+            );
         } catch (DataIntegrityViolationException exception) {
-            // Another application instance may have inserted the same key.
+
             log.info(
-                    "Cleanup task already persisted for object key {}",
-                    objectKey
+                    "Cleanup task already exists for object key"
+            );
+        } catch (Exception exception) {
+            log.error(
+                    "Unable to persist cleanup task: reportId={}",
+                    reportId,
+                    exception
             );
         }
     }
