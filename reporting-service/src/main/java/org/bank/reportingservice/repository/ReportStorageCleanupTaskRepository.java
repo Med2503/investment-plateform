@@ -1,3 +1,4 @@
+
 package org.bank.reportingservice.repository;
 
 import jakarta.persistence.LockModeType;
@@ -98,11 +99,12 @@ public interface ReportStorageCleanupTaskRepository
             WHERE t.id = :taskId
               AND t.status = :processing
               AND t.processingToken = :token
-              AND t.processingLeaseUntil > CURRENT_TIMESTAMP
+              AND t.processingLeaseUntil > :now
             """)
     int deleteClaimedTask(
             @Param("taskId") UUID taskId,
             @Param("processing") CleanupTaskStatus processing,
-            @Param("token") UUID token
+            @Param("token") UUID token,
+            @Param("now") Instant now
     );
 }

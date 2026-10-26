@@ -1,3 +1,4 @@
+
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +28,7 @@ public class ReportStorageCleanupTaskStateService {
 
         Instant now = Instant.now(clock);
         UUID token = UUID.randomUUID();
+
         Instant leaseUntil = now.plusSeconds(
                 properties.leaseDurationSeconds()
         );
@@ -78,7 +79,8 @@ public class ReportStorageCleanupTaskStateService {
         return taskRepository.deleteClaimedTask(
                 taskId,
                 CleanupTaskStatus.PROCESSING,
-                token
+                token,
+                now
         ) == 1;
     }
 
@@ -177,17 +179,12 @@ public class ReportStorageCleanupTaskStateService {
             return "Storage cleanup failed";
         }
 
-        return errorMessage
-                .replaceAll("[\\r\\n\\t]", " ")
-                .substring(
-                        0,
-                        Math.min(
-                                errorMessage
-                                        .replaceAll("[\\r\\n\\t]", " ")
-                                        .length(),
-                                2000
-                        )
-                );
+        String normalized = errorMessage.replaceAll("[\\r\\n\\t]", " ");
+
+        return normalized.substring(
+                0,
+                Math.min(normalized.length(), 1000)
+        );
     }
 
     public record ClaimedCleanupTask(
