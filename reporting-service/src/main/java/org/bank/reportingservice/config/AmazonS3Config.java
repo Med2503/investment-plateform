@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.core.retry.RetryPolicy;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -24,13 +25,16 @@ public class AmazonS3Config {
             @Value("${reporting.storage.s3.api-call-attempt-timeout-seconds:20}")
             long apiCallAttemptTimeoutSeconds,
             @Value("${reporting.storage.s3.api-call-timeout-seconds:60}")
-            long apiCallTimeoutSeconds
+            long apiCallTimeoutSeconds,
+            @Value("${reporting.storage.s3.max-retries:3}")
+            int maxRetries
     ) {
         validateTimeouts(
                 connectionTimeoutSeconds,
                 socketTimeoutSeconds,
                 apiCallAttemptTimeoutSeconds,
-                apiCallTimeoutSeconds
+                apiCallTimeoutSeconds,
+                maxRetries
         );
 
         ClientOverrideConfiguration overrideConfiguration =
@@ -40,6 +44,11 @@ public class AmazonS3Config {
                         )
                         .apiCallTimeout(
                                 Duration.ofSeconds(apiCallTimeoutSeconds)
+                        )
+                        .retryPolicy(
+                                RetryPolicy.builder()
+                                        .numRetries(maxRetries)
+                                        .build()
                         )
                         .build();
 
@@ -56,9 +65,7 @@ public class AmazonS3Config {
                                         )
                                 )
                                 .socketTimeout(
-                                        Duration.ofSeconds(
-                                                socketTimeoutSeconds
-                                        )
+                                        Duration.ofSeconds(socketTimeoutSeconds)
                                 )
                 )
                 .overrideConfiguration(overrideConfiguration)
@@ -69,7 +76,8 @@ public class AmazonS3Config {
             long connectionTimeoutSeconds,
             long socketTimeoutSeconds,
             long apiCallAttemptTimeoutSeconds,
-            long apiCallTimeoutSeconds
+            long apiCallTimeoutSeconds,
+            int maxRetries
     ) {
         if (connectionTimeoutSeconds <= 0
                 || socketTimeoutSeconds <= 0
@@ -83,6 +91,12 @@ public class AmazonS3Config {
         if (apiCallAttemptTimeoutSeconds >= apiCallTimeoutSeconds) {
             throw new IllegalArgumentException(
                     "S3 attempt timeout must be less than total API call timeout"
+            );
+        }
+
+        if (maxRetries < 0) {
+            throw new IllegalArgumentException(
+                    "S3 max retries must not be negative"
             );
         }
     }
