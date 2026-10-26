@@ -70,3 +70,5 @@ reporting:
     s3:
       region: ${AWS_REGION:eu-west-1}
       bucket: ${REPORTING_S3_BUCKET}
+  processing:
+    fixed-delay-ms: ${REPORT_PROCESSING_FIXED_DELAY_MS:5000}
