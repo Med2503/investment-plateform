@@ -1,8 +1,8 @@
-
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bank.reportingservice.exception.ReportStorageException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -18,7 +18,10 @@ public class ReportStorageCleanupRetryService {
     private final ReportStorageCleanupTaskStateService stateService;
 
     public void processTask(UUID taskId) {
-        Objects.requireNonNull(taskId, "Cleanup task ID must not be null");
+        Objects.requireNonNull(
+                taskId,
+                "Cleanup task ID must not be null"
+        );
 
         Optional<ReportStorageCleanupTaskStateService.ClaimedCleanupTask>
                 claim = stateService.claim(taskId);
@@ -36,7 +39,7 @@ public class ReportStorageCleanupRetryService {
 
         try {
             reportStorage.delete(task.objectKey());
-        } catch (Exception storageException) {
+        } catch (ReportStorageException storageException) {
             log.error(
                     "Cleanup deletion failed: reportId={}, exceptionType={}",
                     task.reportId(),
@@ -76,19 +79,19 @@ public class ReportStorageCleanupRetryService {
                     completionException
             );
 
-            // Keep the task available for lease-based recovery.
+            // The task can be recovered when its lease expires.
         }
     }
 
     private void recordFailure(
             ReportStorageCleanupTaskStateService.ClaimedCleanupTask task,
-            Exception storageException
+            ReportStorageException storageException
     ) {
         try {
             boolean recorded = stateService.recordFailure(
                     task.id(),
                     task.token(),
-                    storageException.getMessage()
+                    storageException.getClass().getSimpleName()
             );
 
             if (!recorded) {
