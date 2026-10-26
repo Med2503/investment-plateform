@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bank.reportingservice.config.ReportStorageCleanupProperties;
 import org.bank.reportingservice.entity.CleanupTaskStatus;
 import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
+
 import org.bank.reportingservice.service.ReportStorageCleanupRetryService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;

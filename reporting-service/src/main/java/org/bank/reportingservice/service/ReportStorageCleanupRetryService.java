@@ -1,8 +1,8 @@
-
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,6 +21,10 @@ public class ReportStorageCleanupRetryService {
                 claim = stateService.claim(taskId);
 
         if (claim.isEmpty()) {
+            log.debug(
+                    "Cleanup task is not claimable: taskId={}",
+                    taskId
+            );
             return;
         }
 
@@ -28,9 +32,21 @@ public class ReportStorageCleanupRetryService {
                 claim.get();
 
         try {
-
             reportStorage.delete(task.objectKey());
+        } catch (Exception storageException) {
+            log.error(
+                    "Cleanup deletion failed: reportId={}, exceptionType={}",
+                    task.reportId(),
+                    storageException.getClass().getSimpleName(),
+                    storageException
+            );
 
+            recordFailure(task, storageException);
+            return;
+        }
+
+
+        try {
             boolean completed = stateService.complete(
                     task.id(),
                     task.token()
@@ -43,40 +59,51 @@ public class ReportStorageCleanupRetryService {
                 );
             } else {
                 log.warn(
-                        "Cleanup task was no longer owned by this worker: taskId={}",
+                        "Cleanup task is no longer owned by this worker: "
+                                + "taskId={}",
                         task.id()
                 );
             }
-        } catch (Exception exception) {
+        } catch (Exception completionException) {
             log.error(
-                    "Cleanup failed: reportId={}",
-                    task.reportId(),
-                    exception
+                    "Storage deletion succeeded but task completion "
+                            + "could not be confirmed: taskId={}, "
+                            + "exceptionType={}",
+                    task.id(),
+                    completionException.getClass().getSimpleName(),
+                    completionException
             );
 
-            try {
-                boolean recorded = stateService.recordFailure(
-                        task.id(),
-                        task.token(),
-                        exception.getMessage()
-                );
 
-                if (!recorded) {
-                    log.warn(
-                            "Could not record cleanup failure because the lease "
-                                    + "is no longer owned: taskId={}",
-                            task.id()
-                    );
-                }
-            } catch (Exception persistenceException) {
+        }
+    }
 
-                log.error(
-                        "Unable to persist cleanup failure; lease recovery "
-                                + "will be used: taskId={}",
-                        task.id(),
-                        persistenceException
+    private void recordFailure(
+            ReportStorageCleanupTaskStateService.ClaimedCleanupTask task,
+            Exception storageException
+    ) {
+        try {
+            boolean recorded = stateService.recordFailure(
+                    task.id(),
+                    task.token(),
+                    storageException.getMessage()
+            );
+
+            if (!recorded) {
+                log.warn(
+                        "Cleanup failure was not recorded because the "
+                                + "task lease is no longer owned: taskId={}",
+                        task.id()
                 );
             }
+        } catch (Exception persistenceException) {
+            log.error(
+                    "Unable to persist cleanup failure; lease recovery "
+                            + "will be relied upon: taskId={}, exceptionType={}",
+                    task.id(),
+                    persistenceException.getClass().getSimpleName(),
+                    persistenceException
+            );
         }
     }
 }
