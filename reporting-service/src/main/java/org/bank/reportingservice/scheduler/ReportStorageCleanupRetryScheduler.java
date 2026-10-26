@@ -40,6 +40,15 @@ public class ReportStorageCleanupRetryScheduler {
                 PageRequest.of(0, BATCH_SIZE)
         );
 
+        if (taskIds.isEmpty()) {
+            return;
+        }
+
+        log.info(
+                "Processing eligible storage cleanup tasks: count={}",
+                taskIds.size()
+        );
+
         for (UUID taskId : taskIds) {
             try {
                 retryService.processTask(taskId);
