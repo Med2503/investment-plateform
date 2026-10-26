@@ -70,6 +70,8 @@ reporting:
     s3:
       region: ${AWS_REGION:eu-west-1}
       bucket: ${REPORTING_S3_BUCKET}
+    cleanup:
+      fixed-delay-ms: ${REPORTING_CLEANUP_FIXED_DELAY_MS:30000}
   processing:
     fixed-delay-ms: ${REPORT_PROCESSING_FIXED_DELAY_MS:5000}
     lease-duration-seconds: ${REPORT_PROCESSING_LEASE_DURATION_SECONDS:300}
