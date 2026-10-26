@@ -65,3 +65,8 @@ logging:
   level:
     org.bank.reportingservice: INFO
     org.springframework.kafka: INFO
+reporting:
+  storage:
+    s3:
+      region: ${AWS_REGION:eu-west-1}
+      bucket: ${REPORTING_S3_BUCKET}
