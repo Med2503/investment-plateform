@@ -2,6 +2,8 @@ package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bank.reportingservice.service.ReportStorage;
+import org.bank.reportingservice.service.ReportStorageCleanupTaskService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,11 @@ public class ReportStorageCleanupService {
     private final ReportStorage reportStorage;
     private final ReportStorageCleanupTaskService cleanupTaskService;
 
+    /**
+     * @return true if deletion succeeded or a retry was scheduled;
+     *         false if deletion failed and retry scheduling could not
+     *         be confirmed.
+     */
     public boolean deleteIfPresent(
             String objectKey,
             String reportId
@@ -37,17 +44,15 @@ public class ReportStorageCleanupService {
                     storageException.getClass().getSimpleName()
             );
 
-            enqueueForRetry(
+            return enqueueForRetry(
                     objectKey,
                     reportId,
                     storageException.getClass().getSimpleName()
             );
-
-            return false;
         }
     }
 
-    private void enqueueForRetry(
+    private boolean enqueueForRetry(
             String objectKey,
             String reportId,
             String errorMessage
@@ -60,20 +65,26 @@ public class ReportStorageCleanupService {
             );
 
             log.info(
-                    "Report storage cleanup scheduled for retry: reportId={}",
+                    "Report storage cleanup retry scheduled: reportId={}",
                     reportId
             );
+
+            return true;
         } catch (DataIntegrityViolationException exception) {
-            log.info(
-                    "Cleanup task already exists or violates a database constraint: reportId={}",
+            log.error(
+                    "Could not confirm cleanup task persistence: reportId={}, reason=constraint_violation",
                     reportId
             );
+
+            return false;
         } catch (Exception exception) {
             log.error(
-                    "Unable to schedule report storage cleanup: reportId={}, exceptionType={}",
+                    "Report storage cleanup retry scheduling failed: reportId={}, exceptionType={}",
                     reportId,
                     exception.getClass().getSimpleName()
             );
+
+            return false;
         }
     }
 }

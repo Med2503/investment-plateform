@@ -1,4 +1,3 @@
-
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
@@ -43,6 +42,7 @@ public class ReportProcessingService {
 
         String uploadedObjectKey = null;
         boolean completedSuccessfully = false;
+        boolean finalizationAttempted = false;
 
         try (ReportLeaseHeartbeat.Heartbeat heartbeat =
                      leaseHeartbeat.start(reportId, token)) {
@@ -55,8 +55,9 @@ public class ReportProcessingService {
                 return;
             }
 
-            ReportFileGenerator generator =
-                    selectGenerator(report.getFormat());
+            ReportFileGenerator generator = selectGenerator(
+                    report.getFormat()
+            );
 
             try (GeneratedReport generated = generator.generate(report)) {
                 if (heartbeat.leaseLost().get()) {
@@ -93,6 +94,8 @@ public class ReportProcessingService {
                     return;
                 }
 
+                finalizationAttempted = true;
+
                 boolean finalized = finalizationService.complete(
                         reportId,
                         token,
@@ -110,8 +113,6 @@ public class ReportProcessingService {
                     return;
                 }
 
-                // Set immediately after successful database finalization.
-                // Never delete this object's key after this point.
                 completedSuccessfully = true;
 
                 log.info(
@@ -121,8 +122,9 @@ public class ReportProcessingService {
             }
         } catch (Exception exception) {
             log.error(
-                    "Error while processing report {}",
+                    "Error while processing report {}: exceptionType={}",
                     reportId,
+                    exception.getClass().getSimpleName(),
                     exception
             );
 
@@ -130,6 +132,16 @@ public class ReportProcessingService {
                 log.warn(
                         "Report {} was already finalized successfully. "
                                 + "Its stored artifact will be preserved.",
+                        reportId
+                );
+                return;
+            }
+
+            if (finalizationAttempted) {
+                log.error(
+                        "Report {} finalization outcome is uncertain. "
+                                + "Preserving the uploaded artifact to avoid "
+                                + "deleting a potentially finalized report.",
                         reportId
                 );
                 return;
@@ -143,8 +155,9 @@ public class ReportProcessingService {
                 );
             } catch (Exception finalizationException) {
                 log.error(
-                        "Could not mark report {} as failed",
+                        "Could not mark report {} as failed: exceptionType={}",
                         reportId,
+                        finalizationException.getClass().getSimpleName(),
                         finalizationException
                 );
             }
@@ -172,10 +185,20 @@ public class ReportProcessingService {
                 + extension;
     }
 
-    private void cleanupUploadedObject(String objectKey, UUID reportId) {
-        storageCleanupService.deleteIfPresent(
+    private void cleanupUploadedObject(
+            String objectKey,
+            UUID reportId
+    ) {
+        boolean cleanupHandled = storageCleanupService.deleteIfPresent(
                 objectKey,
                 reportId.toString()
         );
+
+        if (!cleanupHandled) {
+            log.error(
+                    "Report artifact cleanup is unresolved: reportId={}",
+                    reportId
+            );
+        }
     }
 }
