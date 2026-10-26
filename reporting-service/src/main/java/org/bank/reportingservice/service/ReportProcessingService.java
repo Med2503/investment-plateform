@@ -112,15 +112,12 @@ public class ReportProcessingService {
                         token,
                         uploadedObjectKey
                 );
-
                 if (!finalized) {
-                    log.warn(
-                            "Report {} could not be finalized by this worker",
+                    log.error(
+                            "Report {} could not be finalized. "
+                                    + "Preserving uploaded artifact for reconciliation.",
                             reportId
                     );
-
-                    cleanupUploadedObject(uploadedObjectKey, reportId);
-                    uploadedObjectKey = null;
                     return;
                 }
 
