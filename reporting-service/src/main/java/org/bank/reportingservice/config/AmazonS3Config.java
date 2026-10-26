@@ -1,6 +1,5 @@
 package org.bank.reportingservice.config;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,21 +21,24 @@ public class AmazonS3Config {
             long connectionTimeoutSeconds,
             @Value("${reporting.storage.s3.socket-timeout-seconds:30}")
             long socketTimeoutSeconds,
+            @Value("${reporting.storage.s3.api-call-attempt-timeout-seconds:20}")
+            long apiCallAttemptTimeoutSeconds,
             @Value("${reporting.storage.s3.api-call-timeout-seconds:60}")
             long apiCallTimeoutSeconds
     ) {
         validateTimeouts(
                 connectionTimeoutSeconds,
                 socketTimeoutSeconds,
+                apiCallAttemptTimeoutSeconds,
                 apiCallTimeoutSeconds
         );
 
         ClientOverrideConfiguration overrideConfiguration =
                 ClientOverrideConfiguration.builder()
-                        .apiCallTimeout(
-                                Duration.ofSeconds(apiCallTimeoutSeconds)
-                        )
                         .apiCallAttemptTimeout(
+                                Duration.ofSeconds(apiCallAttemptTimeoutSeconds)
+                        )
+                        .apiCallTimeout(
                                 Duration.ofSeconds(apiCallTimeoutSeconds)
                         )
                         .build();
@@ -66,19 +68,21 @@ public class AmazonS3Config {
     private void validateTimeouts(
             long connectionTimeoutSeconds,
             long socketTimeoutSeconds,
+            long apiCallAttemptTimeoutSeconds,
             long apiCallTimeoutSeconds
     ) {
         if (connectionTimeoutSeconds <= 0
                 || socketTimeoutSeconds <= 0
+                || apiCallAttemptTimeoutSeconds <= 0
                 || apiCallTimeoutSeconds <= 0) {
             throw new IllegalArgumentException(
                     "S3 timeouts must be positive"
             );
         }
 
-        if (apiCallTimeoutSeconds < socketTimeoutSeconds) {
+        if (apiCallAttemptTimeoutSeconds >= apiCallTimeoutSeconds) {
             throw new IllegalArgumentException(
-                    "S3 API call timeout must be >= socket timeout"
+                    "S3 attempt timeout must be less than total API call timeout"
             );
         }
     }
