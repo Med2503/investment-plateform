@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -25,6 +26,15 @@ public class ReportFinalizationService {
             UUID token,
             String fileLocation
     ) {
+        Objects.requireNonNull(reportId, "Report ID must not be null");
+        Objects.requireNonNull(token, "Lease token must not be null");
+
+        if (fileLocation == null || fileLocation.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Report file location must not be blank"
+            );
+        }
+
         Instant now = Instant.now(clock);
 
         return reportRepository.completeClaimedReport(
@@ -43,6 +53,9 @@ public class ReportFinalizationService {
             UUID token,
             String errorMessage
     ) {
+        Objects.requireNonNull(reportId, "Report ID must not be null");
+        Objects.requireNonNull(token, "Lease token must not be null");
+
         Instant now = Instant.now(clock);
         String safeMessage = sanitize(errorMessage);
 
