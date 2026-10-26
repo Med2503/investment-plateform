@@ -6,6 +6,7 @@ import org.bank.reportingservice.entity.ReportEntity;
 import org.bank.reportingservice.model.ReportFormat;
 import org.bank.reportingservice.model.ReportStatus;
 import org.bank.reportingservice.repository.ReportRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -89,19 +90,21 @@ public class ReportProcessingService {
                 );
 
                 if (heartbeat.leaseLost().get()) {
-                    cleanupUploadedObject(uploadedObjectKey, reportId);
-                    uploadedObjectKey = null;
+                    log.error(
+                            "Lease lost after upload for report {}. "
+                                    + "Preserving uploaded artifact for reconciliation.",
+                            reportId
+                    );
                     return;
                 }
 
                 if (!leaseService.renew(reportId, token)
                         || heartbeat.leaseLost().get()) {
-                    log.warn(
-                            "Lease lost before finalization of report {}",
+                    log.error(
+                            "Lease lost before finalization of report {}. "
+                                    + "Preserving uploaded artifact for reconciliation.",
                             reportId
                     );
-                    cleanupUploadedObject(uploadedObjectKey, reportId);
-                    uploadedObjectKey = null;
                     return;
                 }
 
@@ -112,6 +115,7 @@ public class ReportProcessingService {
                         token,
                         uploadedObjectKey
                 );
+
                 if (!finalized) {
                     log.error(
                             "Report {} could not be finalized. "
