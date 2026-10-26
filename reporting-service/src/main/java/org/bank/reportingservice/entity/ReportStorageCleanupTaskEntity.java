@@ -1,3 +1,4 @@
+
 package org.bank.reportingservice.entity;
 
 import jakarta.persistence.Column;
@@ -13,8 +14,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -99,7 +100,7 @@ public class ReportStorageCleanupTaskEntity {
         this.objectKey = objectKey;
         this.status = CleanupTaskStatus.PENDING;
         this.attempts = 0;
-        this.nextAttemptAt = java.util.Objects.requireNonNull(
+        this.nextAttemptAt = Objects.requireNonNull(
                 nextAttemptAt,
                 "Next attempt time must not be null"
         );
@@ -129,7 +130,16 @@ public class ReportStorageCleanupTaskEntity {
             );
         }
 
-        this.attempts++;
+        int nextAttemptNumber = this.attempts + 1;
+
+        if (nextAttemptNumber < maxAttempts) {
+            Objects.requireNonNull(
+                    nextAttempt,
+                    "Next attempt time must not be null"
+            );
+        }
+
+        this.attempts = nextAttemptNumber;
         this.lastError = sanitize(errorMessage);
         this.processingToken = null;
         this.processingLeaseUntil = null;
@@ -137,10 +147,7 @@ public class ReportStorageCleanupTaskEntity {
         if (this.attempts >= maxAttempts) {
             this.status = CleanupTaskStatus.DEAD;
         } else {
-            this.nextAttemptAt = java.util.Objects.requireNonNull(
-                    nextAttempt,
-                    "Next attempt time must not be null"
-            );
+            this.nextAttemptAt = nextAttempt;
             this.status = CleanupTaskStatus.PENDING;
         }
     }

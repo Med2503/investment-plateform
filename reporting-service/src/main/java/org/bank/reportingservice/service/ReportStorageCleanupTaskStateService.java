@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,12 +19,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReportStorageCleanupTaskStateService {
 
+    private static final int MAX_ERROR_LENGTH = 1000;
+
     private final ReportStorageCleanupTaskRepository taskRepository;
     private final ReportStorageCleanupProperties properties;
     private final Clock clock;
 
     @Transactional
     public Optional<ClaimedCleanupTask> claim(UUID taskId) {
+        Objects.requireNonNull(taskId, "Cleanup task ID must not be null");
         validateConfiguration();
 
         Instant now = Instant.now(clock);
@@ -53,20 +57,26 @@ public class ReportStorageCleanupTaskStateService {
                 || task.getStatus() != CleanupTaskStatus.PROCESSING
                 || !token.equals(task.getProcessingToken())
                 || task.getProcessingLeaseUntil() == null
-                || !task.getProcessingLeaseUntil().isAfter(now)) {
+                || !task.getProcessingLeaseUntil().isAfter(
+                Instant.now(clock)
+        )) {
             return Optional.empty();
         }
 
-        return Optional.of(new ClaimedCleanupTask(
-                task.getId(),
-                task.getReportId(),
-                task.getObjectKey(),
-                token
-        ));
+        return Optional.of(
+                new ClaimedCleanupTask(
+                        task.getId(),
+                        task.getReportId(),
+                        task.getObjectKey(),
+                        token
+                )
+        );
     }
 
     @Transactional
     public boolean complete(UUID taskId, UUID token) {
+        validateIdentifiers(taskId, token);
+
         Instant now = Instant.now(clock);
 
         ReportStorageCleanupTaskEntity task =
@@ -90,6 +100,7 @@ public class ReportStorageCleanupTaskStateService {
             UUID token,
             String errorMessage
     ) {
+        validateIdentifiers(taskId, token);
         validateConfiguration();
 
         Instant now = Instant.now(clock);
@@ -122,7 +133,6 @@ public class ReportStorageCleanupTaskStateService {
     ) {
         return task != null
                 && task.getStatus() == CleanupTaskStatus.PROCESSING
-                && token != null
                 && token.equals(task.getProcessingToken())
                 && task.getProcessingLeaseUntil() != null
                 && task.getProcessingLeaseUntil().isAfter(now);
@@ -145,7 +155,6 @@ public class ReportStorageCleanupTaskStateService {
         int exponent = Math.min(attempt - 1, 30);
         long multiplier = 1L << exponent;
 
-        // Check before multiplying to avoid long overflow.
         if (initialDelay > maxDelay / multiplier) {
             return maxDelay;
         }
@@ -174,6 +183,11 @@ public class ReportStorageCleanupTaskStateService {
         }
     }
 
+    private void validateIdentifiers(UUID taskId, UUID token) {
+        Objects.requireNonNull(taskId, "Cleanup task ID must not be null");
+        Objects.requireNonNull(token, "Cleanup lease token must not be null");
+    }
+
     private String sanitizeErrorMessage(String errorMessage) {
         if (errorMessage == null || errorMessage.isBlank()) {
             return "Storage cleanup failed";
@@ -183,7 +197,7 @@ public class ReportStorageCleanupTaskStateService {
 
         return normalized.substring(
                 0,
-                Math.min(normalized.length(), 1000)
+                Math.min(normalized.length(), MAX_ERROR_LENGTH)
         );
     }
 

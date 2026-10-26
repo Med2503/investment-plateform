@@ -1,10 +1,11 @@
+
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ public class ReportStorageCleanupRetryService {
     private final ReportStorageCleanupTaskStateService stateService;
 
     public void processTask(UUID taskId) {
+        Objects.requireNonNull(taskId, "Cleanup task ID must not be null");
+
         Optional<ReportStorageCleanupTaskStateService.ClaimedCleanupTask>
                 claim = stateService.claim(taskId);
 
@@ -44,7 +47,6 @@ public class ReportStorageCleanupRetryService {
             recordFailure(task, storageException);
             return;
         }
-
 
         try {
             boolean completed = stateService.complete(
@@ -74,7 +76,7 @@ public class ReportStorageCleanupRetryService {
                     completionException
             );
 
-
+            // Keep the task available for lease-based recovery.
         }
     }
 

@@ -35,7 +35,7 @@ public interface ReportStorageCleanupTaskRepository
                     OR t.processingLeaseUntil <= :now
                 )
             )
-            ORDER BY t.nextAttemptAt ASC
+            ORDER BY t.nextAttemptAt ASC, t.id ASC
             """)
     List<UUID> findEligibleTaskIds(
             @Param("pending") CleanupTaskStatus pending,
