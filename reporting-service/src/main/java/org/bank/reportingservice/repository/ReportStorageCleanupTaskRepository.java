@@ -1,8 +1,6 @@
-
 package org.bank.reportingservice.repository;
 
 import jakarta.persistence.LockModeType;
-
 import org.bank.reportingservice.entity.CleanupTaskStatus;
 import org.bank.reportingservice.entity.ReportStorageCleanupTaskEntity;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +43,10 @@ public interface ReportStorageCleanupTaskRepository
             Pageable pageable
     );
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(
+            clearAutomatically = true,
+            flushAutomatically = true
+    )
     @Query("""
             UPDATE ReportStorageCleanupTaskEntity t
             SET t.status = :processing,
@@ -62,7 +63,10 @@ public interface ReportStorageCleanupTaskRepository
                 OR
                 (
                     t.status = :processing
-                    AND t.processingLeaseUntil <= :now
+                    AND (
+                        t.processingLeaseUntil IS NULL
+                        OR t.processingLeaseUntil <= :now
+                    )
                 )
               )
             """)
@@ -85,12 +89,16 @@ public interface ReportStorageCleanupTaskRepository
             @Param("taskId") UUID taskId
     );
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(
+            clearAutomatically = true,
+            flushAutomatically = true
+    )
     @Query("""
             DELETE FROM ReportStorageCleanupTaskEntity t
             WHERE t.id = :taskId
               AND t.status = :processing
               AND t.processingToken = :token
+              AND t.processingLeaseUntil > CURRENT_TIMESTAMP
             """)
     int deleteClaimedTask(
             @Param("taskId") UUID taskId,
