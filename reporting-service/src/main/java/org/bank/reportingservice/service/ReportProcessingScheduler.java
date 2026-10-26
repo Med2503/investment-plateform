@@ -1,3 +1,4 @@
+
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class ReportProcessingScheduler {
 
     private static final int BATCH_SIZE = 20;
+    private static final int CATEGORY_BATCH_SIZE = BATCH_SIZE / 2;
 
     private final ReportRepository reportRepository;
     private final ReportLeaseService leaseService;
@@ -35,58 +37,69 @@ public class ReportProcessingScheduler {
     public void processPendingReports() {
         Set<UUID> candidateIds = new LinkedHashSet<>();
 
-        try {
-            candidateIds.addAll(findPendingReportIds());
-            candidateIds.addAll(findExpiredProcessingReportIds());
+        candidateIds.addAll(findPendingReportIds());
+        candidateIds.addAll(findExpiredProcessingReportIds());
 
-            if (candidateIds.isEmpty()) {
-                return;
-            }
+        if (candidateIds.isEmpty()) {
+            log.debug("No report candidates found for processing");
+            return;
+        }
 
-            log.debug(
-                    "Found {} reports eligible for processing or recovery",
-                    candidateIds.size()
-            );
+        log.debug(
+                "Found {} report candidates for processing or recovery",
+                candidateIds.size()
+        );
 
-            for (UUID reportId : candidateIds) {
-                processCandidate(reportId);
-            }
-        } catch (Exception exception) {
-            log.error(
-                    "Unexpected error while scanning reports for processing",
-                    exception
-            );
+        for (UUID reportId : candidateIds) {
+            processCandidate(reportId);
         }
     }
 
     private List<UUID> findPendingReportIds() {
-        return reportRepository
-                .findByStatusOrderByCreatedAtAsc(
-                        ReportStatus.PENDING,
-                        PageRequest.of(0, BATCH_SIZE)
-                )
-                .getContent()
-                .stream()
-                .map(ReportEntity::getId)
-                .toList();
+        try {
+            return reportRepository.findByStatusOrderByCreatedAtAsc(
+                            ReportStatus.PENDING,
+                            PageRequest.of(0, CATEGORY_BATCH_SIZE)
+                    )
+                    .getContent()
+                    .stream()
+                    .map(ReportEntity::getId)
+                    .toList();
+        } catch (Exception exception) {
+            log.error(
+                    "Failed to retrieve pending report candidates",
+                    exception
+            );
+            return List.of();
+        }
     }
 
     private List<UUID> findExpiredProcessingReportIds() {
-        Instant now = Instant.now(clock);
+        try {
+            Instant now = Instant.now(clock);
 
-        return reportRepository.findExpiredProcessingReportIds(
-                ReportStatus.PROCESSING,
-                now,
-                PageRequest.of(0, BATCH_SIZE)
-        );
+            return reportRepository.findExpiredProcessingReportIds(
+                    ReportStatus.PROCESSING,
+                    now,
+                    PageRequest.of(0, CATEGORY_BATCH_SIZE)
+            );
+        } catch (Exception exception) {
+            log.error(
+                    "Failed to retrieve expired processing report candidates",
+                    exception
+            );
+            return List.of();
+        }
     }
 
     private void processCandidate(UUID reportId) {
         try {
             leaseService.claimOrRecover(reportId)
                     .ifPresentOrElse(
-                            token -> processingService
-                                    .processClaimedReport(reportId, token),
+                            token -> processingService.processClaimedReport(
+                                    reportId,
+                                    token
+                            ),
                             () -> log.debug(
                                     "Report {} was claimed by another worker "
                                             + "or is no longer eligible",
