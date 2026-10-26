@@ -6,39 +6,30 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "report_storage_cleanup_tasks",
-        indexes = {
-                @Index(
-                        name = "idx_cleanup_status_next_attempt",
-                        columnList = "status,next_attempt_at"
-                )
-        }
-)
+@Table(name = "report_storage_cleanup_tasks")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReportStorageCleanupTaskEntity {
 
     @Id
     private UUID id;
 
-    @Column(name = "report_id", nullable = false, length = 36)
+    @Column(name = "report_id", length = 36)
     private String reportId;
 
-    @Column(
-            name = "object_key",
-            nullable = false,
-            unique = true,
-            length = 1024
-    )
+    @Column(name = "object_key", nullable = false, unique = true, length = 1024)
     private String objectKey;
 
     @Enumerated(EnumType.STRING)
@@ -51,8 +42,14 @@ public class ReportStorageCleanupTaskEntity {
     @Column(name = "next_attempt_at", nullable = false)
     private Instant nextAttemptAt;
 
-    @Column(name = "last_error", length = 2000)
+    @Column(name = "last_error", length = 1000)
     private String lastError;
+
+    @Column(name = "processing_token")
+    private UUID processingToken;
+
+    @Column(name = "processing_lease_until")
+    private Instant processingLeaseUntil;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -62,9 +59,6 @@ public class ReportStorageCleanupTaskEntity {
 
     @Version
     private long version;
-
-    protected ReportStorageCleanupTaskEntity() {
-    }
 
     public ReportStorageCleanupTaskEntity(
             String reportId,
@@ -81,14 +75,30 @@ public class ReportStorageCleanupTaskEntity {
         this.lastError = sanitize(errorMessage);
     }
 
+    public void recordFailure(
+            Instant nextAttempt,
+            String errorMessage,
+            int maxAttempts
+    ) {
+        this.attempts++;
+        this.lastError = sanitize(errorMessage);
+        this.processingToken = null;
+        this.processingLeaseUntil = null;
+
+        if (this.attempts >= maxAttempts) {
+            this.status = CleanupTaskStatus.DEAD;
+        } else {
+            this.status = CleanupTaskStatus.PENDING;
+            this.nextAttemptAt = nextAttempt;
+        }
+    }
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
-
         if (createdAt == null) {
             createdAt = now;
         }
-
         updatedAt = now;
     }
 
@@ -97,61 +107,14 @@ public class ReportStorageCleanupTaskEntity {
         updatedAt = Instant.now();
     }
 
-    public void recordFailure(
-            Instant nextAttempt,
-            String errorMessage,
-            int maxAttempts
-    ) {
-        attempts++;
-        lastError = sanitize(errorMessage);
-
-        if (attempts >= maxAttempts) {
-            status = CleanupTaskStatus.DEAD;
-        } else {
-            nextAttemptAt = nextAttempt;
-        }
-    }
-
-    private String sanitize(String message) {
+    private static String sanitize(String message) {
         if (message == null || message.isBlank()) {
             return "Storage cleanup failed";
         }
 
-        String sanitized = message
-                .replace('\r', ' ')
-                .replace('\n', ' ')
-                .replace('\t', ' ');
-
-        return sanitized.length() > 2000
-                ? sanitized.substring(0, 2000)
-                : sanitized;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getReportId() {
-        return reportId;
-    }
-
-    public String getObjectKey() {
-        return objectKey;
-    }
-
-    public CleanupTaskStatus getStatus() {
-        return status;
-    }
-
-    public int getAttempts() {
-        return attempts;
-    }
-
-    public Instant getNextAttemptAt() {
-        return nextAttemptAt;
-    }
-
-    public String getLastError() {
-        return lastError;
+        String normalized = message.replaceAll("[\\r\\n\\t]", " ");
+        return normalized.length() <= 1000
+                ? normalized
+                : normalized.substring(0, 1000);
     }
 }

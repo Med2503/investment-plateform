@@ -4,15 +4,16 @@ package org.bank.reportingservice.scheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bank.reportingservice.entity.CleanupTaskStatus;
-import org.bank.reportingservice.entity.ReportStorageCleanupTaskEntity;
 import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
 import org.bank.reportingservice.service.ReportStorageCleanupRetryService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -23,27 +24,29 @@ public class ReportStorageCleanupRetryScheduler {
 
     private final ReportStorageCleanupTaskRepository taskRepository;
     private final ReportStorageCleanupRetryService retryService;
+    private final Clock clock;
 
     @Scheduled(
             fixedDelayString =
                     "${reporting.storage.cleanup.fixed-delay-ms:30000}"
     )
     public void retryFailedCleanups() {
-        List<ReportStorageCleanupTaskEntity> tasks =
-                taskRepository
-                        .findByStatusAndNextAttemptAtLessThanEqualOrderByNextAttemptAtAsc(
-                                CleanupTaskStatus.PENDING,
-                                Instant.now(),
-                                PageRequest.of(0, BATCH_SIZE)
-                        );
+        Instant now = Instant.now(clock);
 
-        for (ReportStorageCleanupTaskEntity task : tasks) {
+        List<UUID> taskIds = taskRepository.findEligibleTaskIds(
+                CleanupTaskStatus.PENDING,
+                CleanupTaskStatus.PROCESSING,
+                now,
+                PageRequest.of(0, BATCH_SIZE)
+        );
+
+        for (UUID taskId : taskIds) {
             try {
-                retryService.processTask(task.getId());
+                retryService.processTask(taskId);
             } catch (Exception exception) {
                 log.error(
-                        "Could not process cleanup task {}",
-                        task.getId(),
+                        "Unexpected error processing cleanup task: taskId={}",
+                        taskId,
                         exception
                 );
             }

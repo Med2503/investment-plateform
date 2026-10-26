@@ -3,14 +3,9 @@ package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bank.reportingservice.entity.CleanupTaskStatus;
-import org.bank.reportingservice.entity.ReportStorageCleanupTaskEntity;
-import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -18,69 +13,70 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReportStorageCleanupRetryService {
 
-    private static final int MAX_ATTEMPTS = 10;
-    private static final long INITIAL_DELAY_SECONDS = 30;
-    private static final long MAX_DELAY_SECONDS = 21_600;
-
-    private final ReportStorageCleanupTaskRepository taskRepository;
     private final ReportStorage reportStorage;
+    private final ReportStorageCleanupTaskStateService stateService;
 
-    @Transactional
     public void processTask(UUID taskId) {
-        ReportStorageCleanupTaskEntity task =
-                taskRepository.findByIdForUpdate(taskId).orElse(null);
+        Optional<ReportStorageCleanupTaskStateService.ClaimedCleanupTask>
+                claim = stateService.claim(taskId);
 
-        if (task == null
-                || task.getStatus() != CleanupTaskStatus.PENDING
-                || task.getNextAttemptAt().isAfter(Instant.now())) {
+        if (claim.isEmpty()) {
             return;
         }
 
+        ReportStorageCleanupTaskStateService.ClaimedCleanupTask task =
+                claim.get();
+
         try {
-            reportStorage.delete(task.getObjectKey());
 
-            taskRepository.delete(task);
+            reportStorage.delete(task.objectKey());
 
-            log.info(
-                    "Deferred cleanup succeeded for report {}",
-                    task.getReportId()
-            );
-        } catch (Exception exception) {
-            int nextAttemptNumber = task.getAttempts() + 1;
-            long delaySeconds = calculateDelay(nextAttemptNumber);
-
-            task.recordFailure(
-                    Instant.now().plus(Duration.ofSeconds(delaySeconds)),
-                    exception.getMessage(),
-                    MAX_ATTEMPTS
+            boolean completed = stateService.complete(
+                    task.id(),
+                    task.token()
             );
 
-            if (task.getStatus() == CleanupTaskStatus.DEAD) {
-                log.error(
-                        "Cleanup task {} reached maximum attempts. "
-                                + "Manual intervention required for key {}",
-                        task.getId(),
-                        task.getObjectKey(),
-                        exception
+            if (completed) {
+                log.info(
+                        "Cleanup completed: reportId={}",
+                        task.reportId()
                 );
             } else {
                 log.warn(
-                        "Cleanup failed for report {}. Attempt {}/{}. "
-                                + "Retry in {} seconds.",
-                        task.getReportId(),
-                        task.getAttempts(),
-                        MAX_ATTEMPTS,
-                        delaySeconds,
-                        exception
+                        "Cleanup task was no longer owned by this worker: taskId={}",
+                        task.id()
+                );
+            }
+        } catch (Exception exception) {
+            log.error(
+                    "Cleanup failed: reportId={}",
+                    task.reportId(),
+                    exception
+            );
+
+            try {
+                boolean recorded = stateService.recordFailure(
+                        task.id(),
+                        task.token(),
+                        exception.getMessage()
+                );
+
+                if (!recorded) {
+                    log.warn(
+                            "Could not record cleanup failure because the lease "
+                                    + "is no longer owned: taskId={}",
+                            task.id()
+                    );
+                }
+            } catch (Exception persistenceException) {
+
+                log.error(
+                        "Unable to persist cleanup failure; lease recovery "
+                                + "will be used: taskId={}",
+                        task.id(),
+                        persistenceException
                 );
             }
         }
-    }
-
-    private long calculateDelay(int attempt) {
-        int exponent = Math.min(Math.max(attempt - 1, 0), 10);
-        long delay = INITIAL_DELAY_SECONDS * (1L << exponent);
-
-        return Math.min(delay, MAX_DELAY_SECONDS);
     }
 }
