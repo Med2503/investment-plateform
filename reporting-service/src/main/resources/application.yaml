@@ -73,6 +73,10 @@ reporting:
     cleanup:
       fixed-delay-ms: ${REPORTING_CLEANUP_FIXED_DELAY_MS:30000}
       lease-duration-seconds: ${REPORTING_CLEANUP_LEASE_DURATION_SECONDS:300}
+      max-attempts: ${REPORTING_CLEANUP_MAX_ATTEMPTS:10}
+      initial-delay-seconds: ${REPORTING_CLEANUP_INITIAL_DELAY_SECONDS:30}
+      max-delay-seconds: ${REPORTING_CLEANUP_MAX_DELAY_SECONDS:21600}
+      batch-size: ${REPORTING_CLEANUP_BATCH_SIZE:50}
 
   processing:
     fixed-delay-ms: ${REPORT_PROCESSING_FIXED_DELAY_MS:5000}

@@ -3,6 +3,7 @@ package org.bank.reportingservice.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bank.reportingservice.config.ReportStorageCleanupProperties;
 import org.bank.reportingservice.entity.CleanupTaskStatus;
 import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
 import org.bank.reportingservice.service.ReportStorageCleanupRetryService;
@@ -20,10 +21,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReportStorageCleanupRetryScheduler {
 
-    private static final int BATCH_SIZE = 50;
-
     private final ReportStorageCleanupTaskRepository taskRepository;
     private final ReportStorageCleanupRetryService retryService;
+    private final ReportStorageCleanupProperties properties;
     private final Clock clock;
 
     @Scheduled(
@@ -37,7 +37,7 @@ public class ReportStorageCleanupRetryScheduler {
                 CleanupTaskStatus.PENDING,
                 CleanupTaskStatus.PROCESSING,
                 now,
-                PageRequest.of(0, BATCH_SIZE)
+                PageRequest.of(0, properties.batchSize())
         );
 
         if (taskIds.isEmpty()) {

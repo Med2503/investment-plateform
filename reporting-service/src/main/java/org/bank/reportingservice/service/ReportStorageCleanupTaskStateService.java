@@ -2,10 +2,10 @@
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.bank.reportingservice.config.ReportStorageCleanupProperties;
 import org.bank.reportingservice.entity.CleanupTaskStatus;
 import org.bank.reportingservice.entity.ReportStorageCleanupTaskEntity;
 import org.bank.reportingservice.repository.ReportStorageCleanupTaskRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,27 +19,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReportStorageCleanupTaskStateService {
 
-    private static final int MAX_ATTEMPTS = 10;
-    private static final long INITIAL_DELAY_SECONDS = 30;
-    private static final long MAX_DELAY_SECONDS = 21_600;
-
     private final ReportStorageCleanupTaskRepository taskRepository;
+    private final ReportStorageCleanupProperties properties;
     private final Clock clock;
-
-    @Value("${reporting.storage.cleanup.lease-duration-seconds:300}")
-    private long leaseDurationSeconds;
 
     @Transactional
     public Optional<ClaimedCleanupTask> claim(UUID taskId) {
-        if (leaseDurationSeconds <= 0) {
-            throw new IllegalStateException(
-                    "Cleanup lease duration must be positive"
-            );
-        }
-
         Instant now = Instant.now(clock);
         UUID token = UUID.randomUUID();
-        Instant leaseUntil = now.plusSeconds(leaseDurationSeconds);
+        Instant leaseUntil = now.plusSeconds(
+                properties.leaseDurationSeconds()
+        );
 
         int updated = taskRepository.claimTask(
                 taskId,
@@ -58,8 +48,8 @@ public class ReportStorageCleanupTaskStateService {
                 taskRepository.findByIdForUpdate(taskId).orElse(null);
 
         if (task == null
-                || !token.equals(task.getProcessingToken())
-                || task.getStatus() != CleanupTaskStatus.PROCESSING) {
+                || task.getStatus() != CleanupTaskStatus.PROCESSING
+                || !token.equals(task.getProcessingToken())) {
             return Optional.empty();
         }
 
@@ -101,16 +91,26 @@ public class ReportStorageCleanupTaskStateService {
         task.recordFailure(
                 Instant.now(clock).plus(Duration.ofSeconds(delaySeconds)),
                 errorMessage,
-                MAX_ATTEMPTS
+                properties.maxAttempts()
         );
 
         return true;
     }
 
     private long calculateDelay(int attempt) {
-        int exponent = Math.min(Math.max(attempt - 1, 0), 10);
-        long delay = INITIAL_DELAY_SECONDS * (1L << exponent);
-        return Math.min(delay, MAX_DELAY_SECONDS);
+        int exponent = Math.min(Math.max(attempt - 1, 0), 30);
+
+        long initialDelay = properties.initialDelaySeconds();
+        long maxDelay = properties.maxDelaySeconds();
+
+        // Avoid overflow before applying the maximum delay.
+        if (exponent >= 63
+                || initialDelay > (Long.MAX_VALUE >> exponent)) {
+            return maxDelay;
+        }
+
+        long delay = initialDelay * (1L << exponent);
+        return Math.min(delay, maxDelay);
     }
 
     public record ClaimedCleanupTask(
