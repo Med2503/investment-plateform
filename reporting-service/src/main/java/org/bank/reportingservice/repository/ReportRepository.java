@@ -64,10 +64,8 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
     );
 
     /**
-     * Claims a pending report or reclaims one whose processing lease expired.
-     *
-     * A NULL lease is also considered expired to recover legacy or
-     * partially migrated PROCESSING records.
+     * Claims a pending report or recovers a PROCESSING report
+     * whose lease has expired or is missing.
      */
     @Modifying(
             clearAutomatically = true,
@@ -88,7 +86,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
                         r.status = :processingStatus
                         AND (
                             r.processingLeaseUntil IS NULL
-                            OR r.processingLeaseUntil < :startedAt
+                            OR r.processingLeaseUntil <= :startedAt
                         )
                     )
               )
@@ -103,7 +101,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
     );
 
     /**
-     * Renews a lease only while the current worker still owns it.
+     * Renews the lease only while the worker owns a valid lease.
      */
     @Modifying(
             clearAutomatically = true,
@@ -117,7 +115,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
             WHERE r.id = :reportId
               AND r.status = :processingStatus
               AND r.processingToken = :token
-              AND r.processingLeaseUntil >= :now
+              AND r.processingLeaseUntil > :now
             """)
     int renewLease(
             @Param("reportId") UUID reportId,
@@ -128,7 +126,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
     );
 
     /**
-     * Finds PROCESSING reports with missing or expired leases.
+     * Finds PROCESSING reports whose leases are missing or expired.
      */
     @Query("""
             SELECT r.id
@@ -136,7 +134,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
             WHERE r.status = :processingStatus
               AND (
                     r.processingLeaseUntil IS NULL
-                    OR r.processingLeaseUntil < :now
+                    OR r.processingLeaseUntil <= :now
               )
             ORDER BY r.createdAt ASC
             """)
@@ -147,7 +145,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
     );
 
     /**
-     * Finalizes a report only if the caller still owns its valid lease.
+     * Completes a report only while the caller owns a valid lease.
      */
     @Modifying(
             clearAutomatically = true,
@@ -165,7 +163,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
             WHERE r.id = :reportId
               AND r.status = :processingStatus
               AND r.processingToken = :token
-              AND r.processingLeaseUntil >= :completedAt
+              AND r.processingLeaseUntil > :completedAt
             """)
     int completeClaimedReport(
             @Param("reportId") UUID reportId,
@@ -177,7 +175,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
     );
 
     /**
-     * Marks a report as failed only if the caller still owns its valid lease.
+     * Marks a report as failed only while the caller owns a valid lease.
      */
     @Modifying(
             clearAutomatically = true,
@@ -195,7 +193,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
             WHERE r.id = :reportId
               AND r.status = :processingStatus
               AND r.processingToken = :token
-              AND r.processingLeaseUntil >= :failedAt
+              AND r.processingLeaseUntil > :failedAt
             """)
     int failClaimedReport(
             @Param("reportId") UUID reportId,

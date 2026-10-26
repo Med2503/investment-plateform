@@ -2,7 +2,6 @@ package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.bank.reportingservice.entity.ReportEntity;
 import org.bank.reportingservice.model.ReportStatus;
 import org.bank.reportingservice.repository.ReportRepository;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
