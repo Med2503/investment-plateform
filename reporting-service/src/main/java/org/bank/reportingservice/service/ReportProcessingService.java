@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bank.reportingservice.entity.ReportEntity;
 import org.bank.reportingservice.exception.ReportNotFoundException;
-import org.bank.reportingservice.exception.ReportProcessingException;
 import org.bank.reportingservice.model.ReportFormat;
 import org.bank.reportingservice.model.ReportStatus;
 import org.bank.reportingservice.repository.ReportRepository;
@@ -25,39 +24,75 @@ public class ReportProcessingService {
     private final CsvReportGenerator csvReportGenerator;
     private final JsonReportGenerator jsonReportGenerator;
     private final PdfReportGenerator pdfReportGenerator;
+    private final ReportFinalizationService finalizationService;
+    private final ReportLeaseService leaseService;
     private final Clock clock;
 
-    public void processClaimedReport(UUID reportId) {
+    public void processClaimedReport(UUID reportId, UUID token) {
         ReportEntity report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportNotFoundException(reportId));
 
-        if (report.getStatus() != ReportStatus.PROCESSING) {
+        if (report.getStatus() != ReportStatus.PROCESSING
+                || !token.equals(report.getProcessingToken())) {
             log.warn(
-                    "Report is not in PROCESSING state: reportId={}, status={}",
-                    reportId,
-                    report.getStatus()
+                    "Report lease no longer belongs to this worker: reportId={}",
+                    reportId
             );
             return;
         }
 
+        String uploadedObjectKey = null;
+
         try {
-            ReportFileGenerator generator = selectGenerator(report.getFormat());
+            if (!leaseService.renew(reportId, token)) {
+                return;
+            }
+
+            ReportFileGenerator generator = selectGenerator(
+                    report.getFormat()
+            );
 
             try (GeneratedReport generated = generator.generate(report)) {
+                if (!leaseService.renew(reportId, token)) {
+                    return;
+                }
+
                 String objectKey = createObjectKey(
                         report.getId(),
                         generated.fileExtension()
                 );
 
-                String storedKey = reportStorage.store(
+                uploadedObjectKey = reportStorage.store(
                         objectKey,
                         generated.content(),
                         generated.contentLength(),
                         generated.contentType()
                 );
 
-                report.markCompleted(storedKey, Instant.now(clock));
-                reportRepository.save(report);
+                boolean completed = finalizationService.complete(
+                        reportId,
+                        token,
+                        uploadedObjectKey
+                );
+
+                if (!completed) {
+                    log.warn(
+                            "Report lease expired before finalization: reportId={}",
+                            reportId
+                    );
+
+                    try {
+                        reportStorage.delete(uploadedObjectKey);
+                    } catch (RuntimeException cleanupException) {
+                        log.error(
+                                "Orphaned S3 object cleanup failed: reportId={}",
+                                reportId,
+                                cleanupException
+                        );
+                    }
+
+                    return;
+                }
 
                 log.info(
                         "Report generated successfully: reportId={}, format={}",
@@ -66,7 +101,29 @@ public class ReportProcessingService {
                 );
             }
         } catch (Exception exception) {
-            markFailed(reportId, exception);
+            log.error(
+                    "Report processing failed: reportId={}",
+                    reportId,
+                    exception
+            );
+
+            boolean markedFailed = finalizationService.fail(
+                    reportId,
+                    token,
+                    "Report generation or storage failed"
+            );
+
+            if (!markedFailed && uploadedObjectKey != null) {
+                try {
+                    reportStorage.delete(uploadedObjectKey);
+                } catch (RuntimeException cleanupException) {
+                    log.error(
+                            "Orphaned S3 object cleanup failed: reportId={}",
+                            reportId,
+                            cleanupException
+                    );
+                }
+            }
         }
     }
 
@@ -81,26 +138,5 @@ public class ReportProcessingService {
     private String createObjectKey(UUID reportId, String extension) {
         return "reports/" + reportId + "/" + UUID.randomUUID()
                 + "." + extension;
-    }
-
-    private void markFailed(UUID reportId, Exception exception) {
-        log.error(
-                "Report processing failed: reportId={}",
-                reportId,
-                exception
-        );
-
-        reportRepository.findById(reportId).ifPresent(report -> {
-            if (report.getStatus() != ReportStatus.PROCESSING) {
-                return;
-            }
-
-            String errorMessage = exception instanceof ReportProcessingException
-                    ? exception.getMessage()
-                    : "Report generation or storage failed";
-
-            report.markFailed(errorMessage, Instant.now(clock));
-            reportRepository.save(report);
-        });
     }
 }

@@ -127,4 +127,52 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
             @Param("now") Instant now,
             @Param("leaseUntil") Instant leaseUntil
     );
+
+    @Modifying
+    @Query("""
+        UPDATE ReportEntity r
+        SET r.status = :completedStatus,
+            r.fileLocation = :fileLocation,
+            r.completedAt = :completedAt,
+            r.updatedAt = :completedAt,
+            r.processingLeaseUntil = null,
+            r.processingToken = null,
+            r.version = r.version + 1
+        WHERE r.id = :reportId
+          AND r.status = :processingStatus
+          AND r.processingToken = :token
+          AND r.processingLeaseUntil >= :completedAt
+        """)
+    int completeClaimedReport(
+            @Param("reportId") UUID reportId,
+            @Param("processingStatus") ReportStatus processingStatus,
+            @Param("completedStatus") ReportStatus completedStatus,
+            @Param("token") UUID token,
+            @Param("fileLocation") String fileLocation,
+            @Param("completedAt") Instant completedAt
+    );
+
+    @Modifying
+    @Query("""
+        UPDATE ReportEntity r
+        SET r.status = :failedStatus,
+            r.errorMessage = :errorMessage,
+            r.completedAt = :failedAt,
+            r.updatedAt = :failedAt,
+            r.processingLeaseUntil = null,
+            r.processingToken = null,
+            r.version = r.version + 1
+        WHERE r.id = :reportId
+          AND r.status = :processingStatus
+          AND r.processingToken = :token
+          AND r.processingLeaseUntil >= :failedAt
+        """)
+    int failClaimedReport(
+            @Param("reportId") UUID reportId,
+            @Param("processingStatus") ReportStatus processingStatus,
+            @Param("failedStatus") ReportStatus failedStatus,
+            @Param("token") UUID token,
+            @Param("errorMessage") String errorMessage,
+            @Param("failedAt") Instant failedAt
+    );
 }

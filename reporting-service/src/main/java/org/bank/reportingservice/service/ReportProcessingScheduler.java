@@ -6,8 +6,8 @@ import org.bank.reportingservice.entity.ReportEntity;
 import org.bank.reportingservice.model.ReportStatus;
 import org.bank.reportingservice.repository.ReportRepository;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,14 +20,14 @@ public class ReportProcessingScheduler {
     private static final int BATCH_SIZE = 20;
 
     private final ReportRepository reportRepository;
-    private final ReportClaimService reportClaimService;
-    private final ReportProcessingService reportProcessingService;
+    private final ReportLeaseService leaseService;
+    private final ReportProcessingService processingService;
 
     @Scheduled(
             fixedDelayString = "${reporting.processing.fixed-delay-ms:5000}"
     )
     public void processPendingReports() {
-        List<UUID> pendingReportIds = reportRepository
+        List<UUID> reportIds = reportRepository
                 .findByStatusOrderByCreatedAtAsc(
                         ReportStatus.PENDING,
                         PageRequest.of(0, BATCH_SIZE)
@@ -37,11 +37,15 @@ public class ReportProcessingScheduler {
                 .map(ReportEntity::getId)
                 .toList();
 
-        for (UUID reportId : pendingReportIds) {
+        for (UUID reportId : reportIds) {
             try {
-                if (reportClaimService.claim(reportId)) {
-                    reportProcessingService.processClaimedReport(reportId);
-                }
+                leaseService.claimOrRecover(reportId)
+                        .ifPresent(token ->
+                                processingService.processClaimedReport(
+                                        reportId,
+                                        token
+                                )
+                        );
             } catch (Exception exception) {
                 log.error(
                         "Unable to process report: reportId={}",
