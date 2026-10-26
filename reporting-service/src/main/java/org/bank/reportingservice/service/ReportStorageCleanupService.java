@@ -1,4 +1,3 @@
-
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public class ReportStorageCleanupService {
             enqueueForRetry(
                     objectKey,
                     reportId,
-                    storageException.getMessage()
+                    storageException.getClass().getSimpleName()
             );
 
             return false;
@@ -59,15 +58,19 @@ public class ReportStorageCleanupService {
                     reportId,
                     errorMessage
             );
+
+            log.info(
+                    "Report storage cleanup scheduled for retry: reportId={}",
+                    reportId
+            );
         } catch (DataIntegrityViolationException exception) {
             log.info(
-                    "Cleanup task already exists or violates a database constraint: "
-                            + "reportId={}",
+                    "Cleanup task already exists or violates a database constraint: reportId={}",
                     reportId
             );
         } catch (Exception exception) {
             log.error(
-                    "Cleanup task persistence failed: reportId={}, exceptionType={}",
+                    "Unable to schedule report storage cleanup: reportId={}, exceptionType={}",
                     reportId,
                     exception.getClass().getSimpleName()
             );
