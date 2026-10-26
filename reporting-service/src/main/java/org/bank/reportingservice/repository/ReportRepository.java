@@ -58,4 +58,13 @@ public interface ReportRepository extends JpaRepository<ReportEntity, UUID> {
     );
 
     boolean existsByIdAndUserId(UUID id, String userId);
+
+
+
+    Page<ReportEntity> findByUserIdAndStatusAndReportTypeOrderByCreatedAtDesc(
+            String userId,
+            ReportStatus status,
+            ReportType reportType,
+            Pageable pageable
+    );
 }
