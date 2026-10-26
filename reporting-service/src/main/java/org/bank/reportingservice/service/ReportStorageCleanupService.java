@@ -1,9 +1,8 @@
+
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bank.reportingservice.service.ReportStorage;
-import org.bank.reportingservice.service.ReportStorageCleanupTaskService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +15,18 @@ public class ReportStorageCleanupService {
     private final ReportStorageCleanupTaskService cleanupTaskService;
 
     /**
-     * @return true if deletion succeeded or a retry was scheduled;
-     *         false if deletion failed and retry scheduling could not
-     *         be confirmed.
+     * Attempts immediate deletion and schedules a retry if deletion fails.
+     *
+     * @return true if deletion succeeded or no object key was provided,
+     *         or if a retry was successfully scheduled;
+     *         false if cleanup could not be confirmed.
      */
-    public boolean deleteIfPresent(
-            String objectKey,
-            String reportId
-    ) {
+    public boolean deleteIfPresent(String objectKey, String reportId) {
         if (objectKey == null || objectKey.isBlank()) {
+            log.debug(
+                    "Report storage deletion skipped: reportId={}, reason=empty_object_key",
+                    reportId
+            );
             return true;
         }
 
@@ -72,14 +74,16 @@ public class ReportStorageCleanupService {
             return true;
         } catch (DataIntegrityViolationException exception) {
             log.error(
-                    "Could not confirm cleanup task persistence: reportId={}, reason=constraint_violation",
+                    "Could not confirm cleanup task persistence: "
+                            + "reportId={}, reason=constraint_violation",
                     reportId
             );
 
             return false;
         } catch (Exception exception) {
             log.error(
-                    "Report storage cleanup retry scheduling failed: reportId={}, exceptionType={}",
+                    "Report storage cleanup retry scheduling failed: "
+                            + "reportId={}, exceptionType={}",
                     reportId,
                     exception.getClass().getSimpleName()
             );

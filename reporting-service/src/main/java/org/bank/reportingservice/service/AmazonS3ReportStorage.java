@@ -1,3 +1,4 @@
+
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,13 @@ public class AmazonS3ReportStorage implements ReportStorage {
             long contentLength,
             String contentType
     ) {
+        validateConfiguration();
         validateObjectKey(objectKey);
 
         if (content == null) {
-            throw new IllegalArgumentException("Content must not be null");
+            throw new IllegalArgumentException(
+                    "Content must not be null"
+            );
         }
 
         if (contentLength < 0) {
@@ -74,6 +78,7 @@ public class AmazonS3ReportStorage implements ReportStorage {
 
     @Override
     public InputStream retrieve(String objectKey) {
+        validateConfiguration();
         validateObjectKey(objectKey);
 
         try {
@@ -96,6 +101,7 @@ public class AmazonS3ReportStorage implements ReportStorage {
 
     @Override
     public void delete(String objectKey) {
+        validateConfiguration();
         validateObjectKey(objectKey);
 
         try {
@@ -109,6 +115,14 @@ public class AmazonS3ReportStorage implements ReportStorage {
             throw new ReportStorageException(
                     "Unable to delete report from object storage",
                     exception
+            );
+        }
+    }
+
+    private void validateConfiguration() {
+        if (bucket == null || bucket.isBlank()) {
+            throw new IllegalStateException(
+                    "Report storage S3 bucket must not be blank"
             );
         }
     }
