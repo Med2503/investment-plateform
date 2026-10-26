@@ -1,6 +1,7 @@
 package org.bank.reportingservice.service;
 
 import lombok.RequiredArgsConstructor;
+
 import org.bank.reportingservice.model.ReportStatus;
 import org.bank.reportingservice.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,33 +26,54 @@ public class ReportLeaseService {
 
     @Transactional
     public Optional<UUID> claimOrRecover(UUID reportId) {
+        validateLeaseDuration();
+
         Instant now = Instant.now(clock);
         UUID token = UUID.randomUUID();
+        Instant leaseUntil = now.plus(
+                Duration.ofSeconds(leaseDurationSeconds)
+        );
 
-        int updated = reportRepository.claimOrRecoverReport(
+        int updatedRows = reportRepository.claimOrRecoverReport(
                 reportId,
                 ReportStatus.PENDING,
                 ReportStatus.PROCESSING,
                 now,
-                now.plus(Duration.ofSeconds(leaseDurationSeconds)),
+                leaseUntil,
                 token
         );
 
-        return updated == 1 ? Optional.of(token) : Optional.empty();
+        return updatedRows == 1
+                ? Optional.of(token)
+                : Optional.empty();
     }
 
     @Transactional
     public boolean renew(UUID reportId, UUID token) {
-        Instant now = Instant.now(clock);
+        validateLeaseDuration();
 
-        int updated = reportRepository.renewLease(
+        Instant now = Instant.now(clock);
+        Instant leaseUntil = now.plus(
+                Duration.ofSeconds(leaseDurationSeconds)
+        );
+
+        int updatedRows = reportRepository.renewLease(
                 reportId,
                 ReportStatus.PROCESSING,
                 token,
                 now,
-                now.plus(Duration.ofSeconds(leaseDurationSeconds))
+                leaseUntil
         );
 
-        return updated == 1;
+        return updatedRows == 1;
+    }
+
+    private void validateLeaseDuration() {
+        if (leaseDurationSeconds <= 0) {
+            throw new IllegalStateException(
+                    "reporting.processing.lease-duration-seconds "
+                            + "must be greater than zero"
+            );
+        }
     }
 }
